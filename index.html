@@ -5,16 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parque Costazul | Gerencia de Atención Global</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Configuración de Tailwind -->
     <script>
         tailwind.config = {
             theme: {
@@ -49,7 +43,6 @@
 
     <div class="min-h-screen flex flex-col lg:flex-row">
         
-        <!-- BARRA LATERAL (SIDEBAR) -->
         <aside class="w-full lg:w-72 bg-costazul-navy text-white flex flex-col justify-between shadow-xl z-20 shrink-0">
             <div>
                 <div class="p-6 border-b border-white/10 flex items-center justify-between lg:justify-start gap-3">
@@ -107,9 +100,7 @@
             </div>
         </aside>
 
-        <!-- CONTENIDO PRINCIPAL -->
         <main class="flex-1 flex flex-col min-w-0">
-            <!-- ENCABEZADO -->
             <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sticky top-0 z-10 shadow-sm">
                 <div>
                     <div class="flex items-center gap-2 text-xs text-slate-500 font-medium mb-0.5">
@@ -127,10 +118,8 @@
                 </div>
             </header>
 
-            <!-- VISTAS -->
             <div class="p-4 sm:p-6 lg:p-8 flex-1 max-w-7xl w-full mx-auto">
                 
-                <!-- VISTA 1: REQUERIMIENTOS -->
                 <section id="view-requerimientos" class="view-section fade-in space-y-5">
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="flex items-center gap-2.5">
@@ -156,6 +145,7 @@
                                         <th class="py-3.5 px-4">Prioridad</th>
                                         <th class="py-3.5 px-4">Estado</th>
                                         <th class="py-3.5 px-4">Fecha</th>
+                                        <th class="py-3.5 px-4 text-right">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tickets-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
@@ -169,7 +159,6 @@
                     </div>
                 </section>
 
-                <!-- VISTA 2: INCUMPLIMIENTOS -->
                 <section id="view-incumplimientos" class="view-section hidden fade-in">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
                         <div class="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center mx-auto mb-4 text-2xl">
@@ -183,7 +172,6 @@
                     </div>
                 </section>
 
-                <!-- VISTA 3: ALIADOS -->
                 <section id="view-aliados" class="view-section hidden fade-in">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
                         <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mx-auto mb-4 text-2xl">
@@ -197,7 +185,6 @@
                     </div>
                 </section>
 
-                <!-- VISTA 4: DASHBOARD -->
                 <section id="view-dashboard" class="view-section hidden fade-in">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
                         <div class="w-16 h-16 rounded-2xl bg-costazul-gold/10 text-costazul-gold flex items-center justify-center mx-auto mb-4 text-2xl">
@@ -211,7 +198,6 @@
                     </div>
                 </section>
 
-                <!-- VISTA 5: CONFIGURACIÓN -->
                 <section id="view-configuracion" class="view-section hidden fade-in">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
                         <div class="w-16 h-16 rounded-2xl bg-slate-500/10 text-slate-600 flex items-center justify-center mx-auto mb-4 text-2xl">
@@ -229,7 +215,6 @@
         </main>
     </div>
 
-    <!-- MODAL PARA CREAR TICKET -->
     <div id="ticket-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full my-auto overflow-hidden fade-in">
             <div class="bg-costazul-navy text-white px-6 py-4 flex items-center justify-between">
@@ -331,7 +316,6 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT -->
     <script>
         // 1. FUNCIONES DE LA INTERFAZ
         function mostrarFechaActual() {
@@ -375,7 +359,7 @@
             nav.classList.toggle('flex');
         }
 
-        // 2. LÓGICA DE REQUERIMIENTOS (FASE 3)
+        // 2. LÓGICA DE REQUERIMIENTOS (FASE 3 COMPLETA)
         let tickets = [];
 
         function abrirModalTicket() {
@@ -391,6 +375,37 @@
             document.getElementById('ticket-modal').classList.add('flex');
         }
 
+        // Nueva función para editar
+        function editarTicket(id) {
+            const ticket = tickets.find(t => t.id === id);
+            if (!ticket) return;
+
+            document.getElementById('req-id').value = ticket.id;
+            document.getElementById('req-aliado').value = ticket.aliado;
+            document.getElementById('req-nivel').value = ticket.nivel;
+            document.getElementById('req-local').value = ticket.local;
+            document.getElementById('req-solicitante').value = ticket.solicitante;
+            document.getElementById('req-area').value = ticket.area;
+            document.getElementById('req-tipo').value = ticket.tipo;
+            document.getElementById('req-prioridad').value = ticket.prioridad;
+            document.getElementById('req-descripcion').value = ticket.descripcion;
+
+            document.getElementById('modal-ticket-id').textContent = ticket.id;
+            document.getElementById('modal-title').textContent = 'Editar Requerimiento';
+
+            document.getElementById('ticket-modal').classList.remove('hidden');
+            document.getElementById('ticket-modal').classList.add('flex');
+        }
+
+        // Nueva función para eliminar
+        function eliminarTicket(id) {
+            if (confirm(`¿Estás seguro de que deseas eliminar el ticket ${id}? Esta acción no se puede deshacer.`)) {
+                tickets = tickets.filter(t => t.id !== id);
+                localStorage.setItem('costazul_tickets_fase3', JSON.stringify(tickets));
+                renderizarTablaTickets();
+            }
+        }
+
         function cerrarModalTicket() {
             document.getElementById('ticket-modal').classList.add('hidden');
             document.getElementById('ticket-modal').classList.remove('flex');
@@ -399,9 +414,11 @@
         function guardarTicket(e) {
             e.preventDefault();
             
-            const nuevoTicket = {
-                id: `REQ-2026-${String(tickets.length + 1).padStart(2, '0')}`,
-                fecha: new Date().toISOString(),
+            const idExistente = document.getElementById('req-id').value;
+
+            const ticketData = {
+                id: idExistente || `REQ-2026-${String(tickets.length + 1).padStart(2, '0')}`,
+                fecha: idExistente ? tickets.find(t => t.id === idExistente).fecha : new Date().toISOString(),
                 aliado: document.getElementById('req-aliado').value,
                 nivel: document.getElementById('req-nivel').value,
                 local: document.getElementById('req-local').value,
@@ -413,7 +430,15 @@
                 estado: 'Pendiente'
             };
 
-            tickets.push(nuevoTicket);
+            if (idExistente) {
+                // Actualizar ticket existente
+                const index = tickets.findIndex(t => t.id === idExistente);
+                if (index !== -1) tickets[index] = ticketData;
+            } else {
+                // Crear nuevo ticket
+                tickets.push(ticketData);
+            }
+
             localStorage.setItem('costazul_tickets_fase3', JSON.stringify(tickets));
 
             cerrarModalTicket();
@@ -470,6 +495,16 @@
                     </td>
                     <td class="py-3 px-4 text-xs text-slate-500">
                         ${new Date(t.fecha).toLocaleDateString('es-VE')}
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <button onclick="editarTicket('${t.id}')" class="p-1.5 rounded-lg text-costazul-blue hover:bg-blue-50 transition" title="Editar">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="eliminarTicket('${t.id}')" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition" title="Eliminar">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
