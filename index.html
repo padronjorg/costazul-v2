@@ -2,11 +2,409 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Parque Costazul - Prueba</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parque Costazul | Gerencia de Atención Global</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        costazul: {
+                            navy: '#0A2540',
+                            blue: '#103B66',
+                            teal: '#00A896',
+                            gold: '#D4AF37',
+                            slate: '#F4F7FA'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        .fade-in { animation: fadeIn 0.25s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body>
-    <h1>Hola Jorge Díaz</h1>
-    <p>Esta es mi primera página web oficial.</p>
-    <p>Creada por el equipo de Atención Global.</p>
+<body class="bg-costazul-slate text-slate-800 antialiased font-sans">
+
+    <div class="min-h-screen flex flex-col lg:flex-row">
+        
+        <aside class="w-full lg:w-72 bg-costazul-navy text-white flex flex-col justify-between shadow-xl z-20 shrink-0">
+            <div>
+                <div class="p-6 border-b border-white/10 flex items-center justify-between lg:justify-start gap-3">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-costazul-teal to-sky-600 flex items-center justify-center shadow-lg border border-white/20 shrink-0">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="font-extrabold tracking-tight text-lg text-white block">PARQUE</span>
+                            <span class="font-extrabold tracking-tight text-lg text-white block">COSTAZUL</span>
+                            <p class="text-[10px] font-medium uppercase tracking-widest text-costazul-gold mt-0.5">Atención Global</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleMobileNav()" class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white" aria-label="Abrir menú">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+
+                <nav id="sidebar-nav" class="hidden lg:flex flex-col p-4 space-y-1.5">
+                    <div class="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Gestión Operativa</div>
+                    <button onclick="switchTab('requerimientos')" id="nav-requerimientos" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all bg-costazul-teal text-white shadow-md">
+                        <i class="fa-solid fa-ticket w-5 text-center"></i>
+                        <span>Requerimientos</span>
+                    </button>
+                    <button onclick="switchTab('incumplimientos')" id="nav-incumplimientos" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
+                        <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i>
+                        <span>Incumplimientos</span>
+                    </button>
+                    <button onclick="switchTab('aliados')" id="nav-aliados" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
+                        <i class="fa-solid fa-store w-5 text-center"></i>
+                        <span>Aliados</span>
+                    </button>
+                    <div class="px-3 pt-5 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Análisis</div>
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
+                        <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </button>
+                    <button onclick="switchTab('configuracion')" id="nav-configuracion" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
+                        <i class="fa-solid fa-gear w-5 text-center"></i>
+                        <span>Configuración</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="hidden lg:block p-4 border-t border-white/10 bg-black/15">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-costazul-gold/20 border border-costazul-gold text-costazul-gold flex items-center justify-center font-bold text-sm">
+                        AG
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-xs font-semibold text-white truncate">Gerencia Atención Global</p>
+                        <p class="text-[11px] text-slate-400 truncate">Isla de Margarita</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col min-w-0">
+            <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sticky top-0 z-10 shadow-sm">
+                <div>
+                    <div class="flex items-center gap-2 text-xs text-slate-500 font-medium mb-0.5">
+                        <span>Centro Comercial Parque Costazul</span>
+                        <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                        <span id="breadcrumb" class="text-costazul-teal font-semibold">Requerimientos</span>
+                    </div>
+                    <h1 id="page-title" class="text-xl sm:text-2xl font-bold text-costazul-navy tracking-tight">Requerimientos</h1>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="hidden md:flex items-center gap-2 bg-slate-100 px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-600">
+                        <i class="fa-regular fa-calendar text-costazul-navy"></i>
+                        <span id="current-date"></span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-4 sm:p-6 lg:p-8 flex-1 max-w-7xl w-full mx-auto">
+                
+                <section id="view-requerimientos" class="view-section fade-in space-y-5">
+                    <!-- Barra superior del módulo -->
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-9 h-9 rounded-xl bg-costazul-teal/10 text-costazul-teal flex items-center justify-center text-sm"><i class="fa-solid fa-ticket"></i></span>
+                            <div>
+                                <h2 class="text-sm font-bold text-costazul-navy">Gestión de Requerimientos</h2>
+                                <p class="text-xs text-slate-500">Registra y da seguimiento a los tickets</p>
+                            </div>
+                        </div>
+                        <button onclick="abrirModalTicket()" class="px-4 py-2.5 rounded-xl bg-costazul-teal hover:bg-teal-700 text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-plus"></i> Nuevo Requerimiento
+                        </button>
+                    </div>
+
+                    <!-- Tabla de tickets (por ahora vacía) -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-8 text-center text-slate-500">
+                            <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-300"></i>
+                            <p class="text-sm">Aún no hay tickets registrados.</p>
+                            <p class="text-xs text-slate-400 mt-1">Haz clic en "Nuevo Requerimiento" para crear el primero.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-incumplimientos" class="view-section hidden fade-in">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-costazul-navy mb-2">Módulo de Incumplimientos</h2>
+                        <p class="text-sm text-slate-500 max-w-md mx-auto">
+                            Aquí podrás registrar los incumplimientos de horario de los locales comerciales.
+                            <br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción - Fase 4)</span>
+                        </p>
+                    </div>
+                </section>
+
+                <section id="view-aliados" class="view-section hidden fade-in">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-costazul-navy mb-2">Base de Aliados Comerciales</h2>
+                        <p class="text-sm text-slate-500 max-w-md mx-auto">
+                            Aquí se gestionará la lista maestra de locales comerciales del centro.
+                            <br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción)</span>
+                        </p>
+                    </div>
+                </section>
+
+                <section id="view-dashboard" class="view-section hidden fade-in">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-costazul-gold/10 text-costazul-gold flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-costazul-navy mb-2">Dashboard Gerencial</h2>
+                        <p class="text-sm text-slate-500 max-w-md mx-auto">
+                            Aquí se verán los KPIs unificados de todos los módulos.
+                            <br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción - Fase 6)</span>
+                        </p>
+                    </div>
+                </section>
+
+                <section id="view-configuracion" class="view-section hidden fade-in">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-slate-500/10 text-slate-600 flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-gear"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-costazul-navy mb-2">Configuración</h2>
+                        <p class="text-sm text-slate-500 max-w-md mx-auto">
+                            Aquí se configurarán los horarios, SLAs, conexiones y correos.
+                            <br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción)</span>
+                        </p>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ============================================================
+         MODAL PARA CREAR TICKET
+         ============================================================ -->
+    <div id="ticket-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full my-auto overflow-hidden fade-in">
+            <div class="bg-costazul-navy text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span id="modal-ticket-id" class="font-mono font-bold text-costazul-gold bg-white/10 px-3 py-1 rounded-lg text-sm">REQ-2026-01</span>
+                    <div>
+                        <h3 id="modal-title" class="font-bold text-base leading-tight">Nuevo Requerimiento</h3>
+                    </div>
+                </div>
+                <button onclick="cerrarModalTicket()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="ticket-form" onsubmit="guardarTicket(event)" class="p-6 overflow-y-auto max-h-[75vh] space-y-5">
+                <input type="hidden" id="req-id" />
+                
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-costazul-navy mb-3 flex items-center gap-1.5">
+                        <i class="fa-solid fa-store text-costazul-teal"></i> Datos del Aliado
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Aliado / Marca *</label>
+                            <input type="text" id="req-aliado" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Ubicación *</label>
+                            <select id="req-nivel" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
+                                <option value="">Seleccione...</option>
+                                <option value="Edificio Oeste">Edificio Oeste</option>
+                                <option value="Edificio Este">Edificio Este</option>
+                                <option value="Feria de Comida">Feria de Comida</option>
+                                <option value="Zona VIP">Zona VIP</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Local *</label>
+                            <input type="text" id="req-local" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Solicitante *</label>
+                            <input type="text" id="req-solicitante" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-100">
+
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-costazul-navy mb-3 flex items-center gap-1.5">
+                        <i class="fa-solid fa-layer-group text-costazul-gold"></i> Detalle del Requerimiento
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Área *</label>
+                            <select id="req-area" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
+                                <option value="">Seleccione...</option>
+                                <option value="Electricidad">Electricidad</option>
+                                <option value="Climatización">Climatización</option>
+                                <option value="Seguridad y Prevención">Seguridad y Prevención</option>
+                                <option value="Administración y Finanzas">Administración</option>
+                                <option value="Comercialización">Comercialización</option>
+                                <option value="Servicios Generales">Servicios Generales</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo *</label>
+                            <select id="req-tipo" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
+                                <option value="Incidencia Operativa">Incidencia Operativa</option>
+                                <option value="Mantenimiento">Mantenimiento</option>
+                                <option value="Permiso de Ingreso">Permiso de Ingreso</option>
+                                <option value="Consulta Administrativa">Consulta Administrativa</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Prioridad *</label>
+                            <select id="req-prioridad" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
+                                <option value="Baja">Baja</option>
+                                <option value="Media" selected>Media</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Crítica">Crítica</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Descripción *</label>
+                        <textarea id="req-descripcion" rows="3" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                    <button type="button" onclick="cerrarModalTicket()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition">Cancelar</button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-costazul-navy hover:bg-costazul-blue text-white text-sm font-semibold shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Ticket
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function mostrarFechaActual() {
+            const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const hoy = new Date().toLocaleDateString('es-VE', opciones);
+            document.getElementById('current-date').textContent = hoy.charAt(0).toUpperCase() + hoy.slice(1);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-costazul-teal', 'text-white', 'shadow-md');
+                btn.classList.add('text-slate-300', 'hover:bg-white/10');
+            });
+            
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            activeBtn.classList.remove('text-slate-300', 'hover:bg-white/10');
+            activeBtn.classList.add('bg-costazul-teal', 'text-white', 'shadow-md');
+            
+            const titulos = {
+                requerimientos: 'Requerimientos',
+                incumplimientos: 'Incumplimientos',
+                aliados: 'Aliados Comerciales',
+                dashboard: 'Dashboard Gerencial',
+                configuracion: 'Configuración'
+            };
+            document.getElementById('breadcrumb').textContent = titulos[tabId];
+            document.getElementById('page-title').textContent = titulos[tabId];
+            
+            if (window.innerWidth < 1024) {
+                document.getElementById('sidebar-nav').classList.add('hidden');
+                document.getElementById('sidebar-nav').classList.remove('flex');
+            }
+        }
+
+        function toggleMobileNav() {
+            const nav = document.getElementById('sidebar-nav');
+            nav.classList.toggle('hidden');
+            nav.classList.toggle('flex');
+        }
+
+        // ============================================================
+        // LÓGICA DE REQUERIMIENTOS (FASE 3.1)
+        // ============================================================
+        let tickets = [];
+
+        function abrirModalTicket() {
+            document.getElementById('ticket-form').reset();
+            document.getElementById('req-id').value = '';
+            
+            const num = tickets.length + 1;
+            const idSimulado = `REQ-2026-${String(num).padStart(2, '0')}`;
+            document.getElementById('modal-ticket-id').textContent = idSimulado;
+            document.getElementById('modal-title').textContent = 'Nuevo Requerimiento';
+            
+            document.getElementById('ticket-modal').classList.remove('hidden');
+            document.getElementById('ticket-modal').classList.add('flex');
+        }
+
+        function cerrarModalTicket() {
+            document.getElementById('ticket-modal').classList.add('hidden');
+            document.getElementById('ticket-modal').classList.remove('flex');
+        }
+
+        function guardarTicket(e) {
+            e.preventDefault();
+            
+            const nuevoTicket = {
+                id: `REQ-2026-${String(tickets.length + 1).padStart(2, '0')}`,
+                fecha: new Date().toISOString(),
+                aliado: document.getElementById('req-aliado').value,
+                nivel: document.getElementById('req-nivel').value,
+                local: document.getElementById('req-local').value,
+                solicitante: document.getElementById('req-solicitante').value,
+                area: document.getElementById('req-area').value,
+                tipo: document.getElementById('req-tipo').value,
+                prioridad: document.getElementById('req-prioridad').value,
+                descripcion: document.getElementById('req-descripcion').value,
+                estado: 'Pendiente'
+            };
+
+            tickets.push(nuevoTicket);
+            localStorage.setItem('costazul_tickets_fase3', JSON.stringify(tickets));
+
+            cerrarModalTicket();
+            alert(`¡Ticket ${nuevoTicket.id} guardado con éxito!\n\n(En la próxima fase lo veremos en la tabla)`);
+            
+            window.location.reload();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            mostrarFechaActual();
+            const guardados = localStorage.getItem('costazul_tickets_fase3');
+            if (guardados) {
+                tickets = JSON.parse(guardados);
+            }
+        });
+    </script>
 </body>
 </html>
