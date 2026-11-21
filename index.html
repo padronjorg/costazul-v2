@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parque Costazul | Gerencia de Atención Global</title>
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- Configuración de Tailwind -->
     <script>
         tailwind.config = {
             theme: {
@@ -43,6 +49,7 @@
 
     <div class="min-h-screen flex flex-col lg:flex-row">
         
+        <!-- BARRA LATERAL (SIDEBAR) -->
         <aside class="w-full lg:w-72 bg-costazul-navy text-white flex flex-col justify-between shadow-xl z-20 shrink-0">
             <div>
                 <div class="p-6 border-b border-white/10 flex items-center justify-between lg:justify-start gap-3">
@@ -91,9 +98,7 @@
 
             <div class="hidden lg:block p-4 border-t border-white/10 bg-black/15">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full bg-costazul-gold/20 border border-costazul-gold text-costazul-gold flex items-center justify-center font-bold text-sm">
-                        AG
-                    </div>
+                    <div class="w-9 h-9 rounded-full bg-costazul-gold/20 border border-costazul-gold text-costazul-gold flex items-center justify-center font-bold text-sm">AG</div>
                     <div class="overflow-hidden">
                         <p class="text-xs font-semibold text-white truncate">Gerencia Atención Global</p>
                         <p class="text-[11px] text-slate-400 truncate">Isla de Margarita</p>
@@ -102,7 +107,9 @@
             </div>
         </aside>
 
+        <!-- CONTENIDO PRINCIPAL -->
         <main class="flex-1 flex flex-col min-w-0">
+            <!-- ENCABEZADO -->
             <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sticky top-0 z-10 shadow-sm">
                 <div>
                     <div class="flex items-center gap-2 text-xs text-slate-500 font-medium mb-0.5">
@@ -120,10 +127,11 @@
                 </div>
             </header>
 
+            <!-- VISTAS -->
             <div class="p-4 sm:p-6 lg:p-8 flex-1 max-w-7xl w-full mx-auto">
                 
+                <!-- VISTA 1: REQUERIMIENTOS -->
                 <section id="view-requerimientos" class="view-section fade-in space-y-5">
-                    <!-- Barra superior del módulo -->
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="flex items-center gap-2.5">
                             <span class="w-9 h-9 rounded-xl bg-costazul-teal/10 text-costazul-teal flex items-center justify-center text-sm"><i class="fa-solid fa-ticket"></i></span>
@@ -137,9 +145,23 @@
                         </button>
                     </div>
 
-                    <!-- Tabla de tickets (por ahora vacía) -->
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="p-8 text-center text-slate-500">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                        <th class="py-3.5 px-4">Ticket</th>
+                                        <th class="py-3.5 px-4">Aliado / Local</th>
+                                        <th class="py-3.5 px-4">Área / Tipo</th>
+                                        <th class="py-3.5 px-4">Prioridad</th>
+                                        <th class="py-3.5 px-4">Estado</th>
+                                        <th class="py-3.5 px-4">Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tickets-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
+                        </div>
+                        <div id="empty-state-tickets" class="p-8 text-center text-slate-500">
                             <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-300"></i>
                             <p class="text-sm">Aún no hay tickets registrados.</p>
                             <p class="text-xs text-slate-400 mt-1">Haz clic en "Nuevo Requerimiento" para crear el primero.</p>
@@ -147,6 +169,7 @@
                     </div>
                 </section>
 
+                <!-- VISTA 2: INCUMPLIMIENTOS -->
                 <section id="view-incumplimientos" class="view-section hidden fade-in">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
                         <div class="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center mx-auto mb-4 text-2xl">
@@ -160,6 +183,7 @@
                     </div>
                 </section>
 
+                <!-- VISTA 3: ALIADOS -->
                 <section id="view-aliados" class="view-section hidden fade-in">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
                         <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mx-auto mb-4 text-2xl">
@@ -173,6 +197,7 @@
                     </div>
                 </section>
 
+                <!-- VISTA 4: DASHBOARD -->
                 <section id="view-dashboard" class="view-section hidden fade-in">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
                         <div class="w-16 h-16 rounded-2xl bg-costazul-gold/10 text-costazul-gold flex items-center justify-center mx-auto mb-4 text-2xl">
@@ -186,6 +211,7 @@
                     </div>
                 </section>
 
+                <!-- VISTA 5: CONFIGURACIÓN -->
                 <section id="view-configuracion" class="view-section hidden fade-in">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
                         <div class="w-16 h-16 rounded-2xl bg-slate-500/10 text-slate-600 flex items-center justify-center mx-auto mb-4 text-2xl">
@@ -203,9 +229,7 @@
         </main>
     </div>
 
-    <!-- ============================================================
-         MODAL PARA CREAR TICKET
-         ============================================================ -->
+    <!-- MODAL PARA CREAR TICKET -->
     <div id="ticket-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full my-auto overflow-hidden fade-in">
             <div class="bg-costazul-navy text-white px-6 py-4 flex items-center justify-between">
@@ -307,7 +331,9 @@
         </div>
     </div>
 
+    <!-- JAVASCRIPT -->
     <script>
+        // 1. FUNCIONES DE LA INTERFAZ
         function mostrarFechaActual() {
             const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const hoy = new Date().toLocaleDateString('es-VE', opciones);
@@ -349,9 +375,7 @@
             nav.classList.toggle('flex');
         }
 
-        // ============================================================
-        // LÓGICA DE REQUERIMIENTOS (FASE 3.1)
-        // ============================================================
+        // 2. LÓGICA DE REQUERIMIENTOS (FASE 3)
         let tickets = [];
 
         function abrirModalTicket() {
@@ -393,17 +417,74 @@
             localStorage.setItem('costazul_tickets_fase3', JSON.stringify(tickets));
 
             cerrarModalTicket();
-            alert(`¡Ticket ${nuevoTicket.id} guardado con éxito!\n\n(En la próxima fase lo veremos en la tabla)`);
-            
-            window.location.reload();
+            renderizarTablaTickets();
         }
 
+        function renderizarTablaTickets() {
+            const tbody = document.getElementById('tickets-table-body');
+            const emptyState = document.getElementById('empty-state-tickets');
+
+            if (tickets.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            const coloresPrioridad = {
+                'Crítica': 'bg-rose-50 text-rose-700 border-rose-200',
+                'Alta': 'bg-orange-50 text-orange-700 border-orange-200',
+                'Media': 'bg-blue-50 text-blue-700 border-blue-200',
+                'Baja': 'bg-slate-100 text-slate-600 border-slate-200'
+            };
+
+            const coloresEstado = {
+                'Pendiente': 'bg-amber-50 text-amber-700 border-amber-200',
+                'En Proceso': 'bg-sky-50 text-sky-700 border-sky-200',
+                'Resuelto': 'bg-emerald-50 text-emerald-700 border-emerald-200'
+            };
+
+            tbody.innerHTML = tickets.map(t => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="py-3 px-4">
+                        <span class="font-mono font-bold text-xs text-costazul-navy bg-slate-100 px-2.5 py-1 rounded-lg">${t.id}</span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-slate-800">${t.aliado}</div>
+                        <div class="text-xs text-slate-500">${t.nivel} • ${t.local}</div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="text-xs font-semibold text-costazul-navy">${t.area}</div>
+                        <div class="text-xs text-slate-500">${t.tipo}</div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold border ${coloresPrioridad[t.prioridad] || coloresPrioridad['Media']}">
+                            ${t.prioridad}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold border ${coloresEstado[t.estado] || coloresEstado['Pendiente']}">
+                            ${t.estado}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-xs text-slate-500">
+                        ${new Date(t.fecha).toLocaleDateString('es-VE')}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 3. INICIALIZACIÓN
         document.addEventListener('DOMContentLoaded', () => {
             mostrarFechaActual();
+            
             const guardados = localStorage.getItem('costazul_tickets_fase3');
             if (guardados) {
                 tickets = JSON.parse(guardados);
             }
+            
+            renderizarTablaTickets();
         });
     </script>
 </body>
