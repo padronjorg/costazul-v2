@@ -15,13 +15,7 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        costazul: {
-                            navy: '#0A2540',
-                            blue: '#103B66',
-                            teal: '#00A896',
-                            gold: '#D4AF37',
-                            slate: '#F4F7FA'
-                        }
+                        costazul: { navy: '#0A2540', blue: '#103B66', teal: '#00A896', gold: '#D4AF37', slate: '#F4F7FA' }
                     }
                 }
             }
@@ -33,10 +27,7 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
         .fade-in { animation: fadeIn 0.25s ease-out forwards; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-costazul-slate text-slate-800 antialiased font-sans">
@@ -66,25 +57,20 @@
                 <nav id="sidebar-nav" class="hidden lg:flex flex-col p-4 space-y-1.5">
                     <div class="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Gestión Operativa</div>
                     <button onclick="switchTab('requerimientos')" id="nav-requerimientos" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all bg-costazul-teal text-white shadow-md">
-                        <i class="fa-solid fa-ticket w-5 text-center"></i>
-                        <span>Requerimientos</span>
+                        <i class="fa-solid fa-ticket w-5 text-center"></i><span>Requerimientos</span>
                     </button>
                     <button onclick="switchTab('incumplimientos')" id="nav-incumplimientos" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
-                        <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i>
-                        <span>Incumplimientos</span>
+                        <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i><span>Incumplimientos</span>
                     </button>
                     <button onclick="switchTab('aliados')" id="nav-aliados" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
-                        <i class="fa-solid fa-store w-5 text-center"></i>
-                        <span>Aliados</span>
+                        <i class="fa-solid fa-store w-5 text-center"></i><span>Aliados</span>
                     </button>
                     <div class="px-3 pt-5 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Análisis</div>
                     <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
-                        <i class="fa-solid fa-chart-pie w-5 text-center"></i>
-                        <span>Dashboard</span>
+                        <i class="fa-solid fa-chart-pie w-5 text-center"></i><span>Dashboard</span>
                     </button>
                     <button onclick="switchTab('configuracion')" id="nav-configuracion" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
-                        <i class="fa-solid fa-gear w-5 text-center"></i>
-                        <span>Configuración</span>
+                        <i class="fa-solid fa-gear w-5 text-center"></i><span>Configuración</span>
                     </button>
                 </nav>
             </div>
@@ -120,6 +106,7 @@
 
             <div class="p-4 sm:p-6 lg:p-8 flex-1 max-w-7xl w-full mx-auto">
                 
+                <!-- VISTA 1: REQUERIMIENTOS -->
                 <section id="view-requerimientos" class="view-section fade-in space-y-5">
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="flex items-center gap-2.5">
@@ -159,55 +146,67 @@
                     </div>
                 </section>
 
-                <section id="view-incumplimientos" class="view-section hidden fade-in">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
-                        <div class="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center mx-auto mb-4 text-2xl">
-                            <i class="fa-solid fa-clock-rotate-left"></i>
+                <!-- VISTA 2: INCUMPLIMIENTOS (FASE 4.1) -->
+                <section id="view-incumplimientos" class="view-section hidden fade-in space-y-5">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center text-sm"><i class="fa-solid fa-clock-rotate-left"></i></span>
+                            <div>
+                                <h2 class="text-sm font-bold text-costazul-navy">Control de Incumplimientos</h2>
+                                <p class="text-xs text-slate-500">Registra los incumplimientos de horario</p>
+                            </div>
                         </div>
-                        <h2 class="text-xl font-bold text-costazul-navy mb-2">Módulo de Incumplimientos</h2>
-                        <p class="text-sm text-slate-500 max-w-md mx-auto">
-                            Aquí podrás registrar los incumplimientos de horario de los locales comerciales.
-                            <br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción - Fase 4)</span>
-                        </p>
+                        <button onclick="abrirModalIncumplimiento()" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-plus"></i> Registrar Incumplimiento
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                        <th class="py-3.5 px-4">Fecha</th>
+                                        <th class="py-3.5 px-4">Local</th>
+                                        <th class="py-3.5 px-4">Hora</th>
+                                        <th class="py-3.5 px-4">Tipo</th>
+                                        <th class="py-3.5 px-4">Reportado por</th>
+                                        <th class="py-3.5 px-4 text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="incumplimientos-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
+                        </div>
+                        <div id="empty-state-incumplimientos" class="p-8 text-center text-slate-500">
+                            <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-300"></i>
+                            <p class="text-sm">Aún no hay incumplimientos registrados.</p>
+                            <p class="text-xs text-slate-400 mt-1">Haz clic en "Registrar Incumplimiento" para crear el primero.</p>
+                        </div>
                     </div>
                 </section>
 
+                <!-- VISTAS 3, 4 y 5 -->
                 <section id="view-aliados" class="view-section hidden fade-in">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
-                        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mx-auto mb-4 text-2xl">
-                            <i class="fa-solid fa-store"></i>
-                        </div>
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fa-solid fa-store"></i></div>
                         <h2 class="text-xl font-bold text-costazul-navy mb-2">Base de Aliados Comerciales</h2>
-                        <p class="text-sm text-slate-500 max-w-md mx-auto">
-                            Aquí se gestionará la lista maestra de locales comerciales del centro.
-                            <br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción)</span>
-                        </p>
+                        <p class="text-sm text-slate-500 max-w-md mx-auto">Aquí se gestionará la lista maestra de locales comerciales del centro.<br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción)</span></p>
                     </div>
                 </section>
 
                 <section id="view-dashboard" class="view-section hidden fade-in">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
-                        <div class="w-16 h-16 rounded-2xl bg-costazul-gold/10 text-costazul-gold flex items-center justify-center mx-auto mb-4 text-2xl">
-                            <i class="fa-solid fa-chart-pie"></i>
-                        </div>
+                        <div class="w-16 h-16 rounded-2xl bg-costazul-gold/10 text-costazul-gold flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fa-solid fa-chart-pie"></i></div>
                         <h2 class="text-xl font-bold text-costazul-navy mb-2">Dashboard Gerencial</h2>
-                        <p class="text-sm text-slate-500 max-w-md mx-auto">
-                            Aquí se verán los KPIs unificados de todos los módulos.
-                            <br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción - Fase 6)</span>
-                        </p>
+                        <p class="text-sm text-slate-500 max-w-md mx-auto">Aquí se verán los KPIs unificados de todos los módulos.<br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción - Fase 6)</span></p>
                     </div>
                 </section>
 
                 <section id="view-configuracion" class="view-section hidden fade-in">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
-                        <div class="w-16 h-16 rounded-2xl bg-slate-500/10 text-slate-600 flex items-center justify-center mx-auto mb-4 text-2xl">
-                            <i class="fa-solid fa-gear"></i>
-                        </div>
+                        <div class="w-16 h-16 rounded-2xl bg-slate-500/10 text-slate-600 flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fa-solid fa-gear"></i></div>
                         <h2 class="text-xl font-bold text-costazul-navy mb-2">Configuración</h2>
-                        <p class="text-sm text-slate-500 max-w-md mx-auto">
-                            Aquí se configurarán los horarios, SLAs, conexiones y correos.
-                            <br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción)</span>
-                        </p>
+                        <p class="text-sm text-slate-500 max-w-md mx-auto">Aquí se configurarán los horarios, SLAs, conexiones y correos.<br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción)</span></p>
                     </div>
                 </section>
 
@@ -215,109 +214,94 @@
         </main>
     </div>
 
+    <!-- MODAL: TICKETS -->
     <div id="ticket-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full my-auto overflow-hidden fade-in">
             <div class="bg-costazul-navy text-white px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <span id="modal-ticket-id" class="font-mono font-bold text-costazul-gold bg-white/10 px-3 py-1 rounded-lg text-sm">REQ-2026-01</span>
-                    <div>
-                        <h3 id="modal-title" class="font-bold text-base leading-tight">Nuevo Requerimiento</h3>
-                    </div>
+                    <h3 id="modal-title" class="font-bold text-base leading-tight">Nuevo Requerimiento</h3>
                 </div>
-                <button onclick="cerrarModalTicket()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <button onclick="cerrarModalTicket()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-
             <form id="ticket-form" onsubmit="guardarTicket(event)" class="p-6 overflow-y-auto max-h-[75vh] space-y-5">
                 <input type="hidden" id="req-id" />
-                
                 <div>
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-costazul-navy mb-3 flex items-center gap-1.5">
-                        <i class="fa-solid fa-store text-costazul-teal"></i> Datos del Aliado
-                    </h4>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-costazul-navy mb-3 flex items-center gap-1.5"><i class="fa-solid fa-store text-costazul-teal"></i> Datos del Aliado</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Aliado / Marca *</label>
-                            <input type="text" id="req-aliado" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Ubicación *</label>
-                            <select id="req-nivel" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
-                                <option value="">Seleccione...</option>
-                                <option value="Edificio Oeste">Edificio Oeste</option>
-                                <option value="Edificio Este">Edificio Este</option>
-                                <option value="Feria de Comida">Feria de Comida</option>
-                                <option value="Zona VIP">Zona VIP</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Local *</label>
-                            <input type="text" id="req-local" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Solicitante *</label>
-                            <input type="text" id="req-solicitante" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
-                        </div>
+                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Aliado / Marca *</label><input type="text" id="req-aliado" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none"></div>
+                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Ubicación *</label><select id="req-nivel" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none"><option value="">Seleccione...</option><option value="Edificio Oeste">Edificio Oeste</option><option value="Edificio Este">Edificio Este</option><option value="Feria de Comida">Feria de Comida</option><option value="Zona VIP">Zona VIP</option></select></div>
+                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Local *</label><input type="text" id="req-local" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none"></div>
+                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Solicitante *</label><input type="text" id="req-solicitante" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none"></div>
                     </div>
                 </div>
-
                 <hr class="border-slate-100">
-
                 <div>
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-costazul-navy mb-3 flex items-center gap-1.5">
-                        <i class="fa-solid fa-layer-group text-costazul-gold"></i> Detalle del Requerimiento
-                    </h4>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-costazul-navy mb-3 flex items-center gap-1.5"><i class="fa-solid fa-layer-group text-costazul-gold"></i> Detalle del Requerimiento</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Área *</label>
-                            <select id="req-area" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
-                                <option value="">Seleccione...</option>
-                                <option value="Electricidad">Electricidad</option>
-                                <option value="Climatización">Climatización</option>
-                                <option value="Seguridad y Prevención">Seguridad y Prevención</option>
-                                <option value="Administración y Finanzas">Administración</option>
-                                <option value="Comercialización">Comercialización</option>
-                                <option value="Servicios Generales">Servicios Generales</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo *</label>
-                            <select id="req-tipo" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
-                                <option value="Incidencia Operativa">Incidencia Operativa</option>
-                                <option value="Mantenimiento">Mantenimiento</option>
-                                <option value="Permiso de Ingreso">Permiso de Ingreso</option>
-                                <option value="Consulta Administrativa">Consulta Administrativa</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Prioridad *</label>
-                            <select id="req-prioridad" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
-                                <option value="Baja">Baja</option>
-                                <option value="Media" selected>Media</option>
-                                <option value="Alta">Alta</option>
-                                <option value="Crítica">Crítica</option>
-                            </select>
-                        </div>
+                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Área *</label><select id="req-area" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none"><option value="">Seleccione...</option><option value="Electricidad">Electricidad</option><option value="Climatización">Climatización</option><option value="Seguridad y Prevención">Seguridad y Prevención</option><option value="Administración y Finanzas">Administración</option><option value="Comercialización">Comercialización</option><option value="Servicios Generales">Servicios Generales</option></select></div>
+                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Tipo *</label><select id="req-tipo" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none"><option value="Incidencia Operativa">Incidencia Operativa</option><option value="Mantenimiento">Mantenimiento</option><option value="Permiso de Ingreso">Permiso de Ingreso</option><option value="Consulta Administrativa">Consulta Administrativa</option></select></div>
+                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Prioridad *</label><select id="req-prioridad" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none"><option value="Baja">Baja</option><option value="Media" selected>Media</option><option value="Alta">Alta</option><option value="Crítica">Crítica</option></select></div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Descripción *</label>
-                        <textarea id="req-descripcion" rows="3" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none"></textarea>
-                    </div>
+                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Descripción *</label><textarea id="req-descripcion" rows="3" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none"></textarea></div>
                 </div>
-
                 <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
                     <button type="button" onclick="cerrarModalTicket()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition">Cancelar</button>
-                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-costazul-navy hover:bg-costazul-blue text-white text-sm font-semibold shadow-md transition flex items-center gap-2">
-                        <i class="fa-solid fa-floppy-disk"></i> Guardar Ticket
-                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-costazul-navy hover:bg-costazul-blue text-white text-sm font-semibold shadow-md transition flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Guardar Ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: INCUMPLIMIENTOS (FASE 4.1) -->
+    <div id="incumplimiento-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full my-auto overflow-hidden fade-in">
+            <div class="bg-gradient-to-r from-rose-700 to-rose-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center"><i class="fa-solid fa-clock-rotate-left text-white"></i></span>
+                    <div>
+                        <h3 class="font-bold text-base leading-tight">Registrar Incumplimiento</h3>
+                        <p class="text-[11px] text-rose-100">Registro de faltas en el horario comercial</p>
+                    </div>
+                </div>
+                <button onclick="cerrarModalIncumplimiento()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="incumplimiento-form" onsubmit="guardarIncumplimiento(event)" class="p-6 overflow-y-auto max-h-[75vh] space-y-4">
+                <input type="hidden" id="inc-id" />
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Fecha *</label><input type="date" id="inc-fecha" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-rose-500 outline-none"></div>
+                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Hora del reporte *</label><input type="time" id="inc-hora" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-rose-500 outline-none"></div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Código de Local *</label><input type="text" id="inc-local" required placeholder="Ej. L-104" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm uppercase focus:ring-2 focus:ring-rose-500 outline-none"></div>
+                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Nombre del Local *</label><input type="text" id="inc-nombre-local" required placeholder="Ej. Zara" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-rose-500 outline-none"></div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Incumplimiento *</label>
+                        <select id="inc-tipo" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-rose-500 outline-none">
+                            <option value="Apertura Tardía">Apertura Tardía</option>
+                            <option value="Cierre Anticipado">Cierre Anticipado</option>
+                            <option value="Cerrado en Horario">Cerrado en Horario (Grave)</option>
+                        </select>
+                    </div>
+                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Reportado por *</label><input type="text" id="inc-reporta" required placeholder="Tu nombre" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-rose-500 outline-none"></div>
+                </div>
+
+                <div><label class="block text-xs font-semibold text-slate-700 mb-1">Observaciones (Opcional)</label><textarea id="inc-obs" rows="2" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-rose-500 outline-none"></textarea></div>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                    <button type="button" onclick="cerrarModalIncumplimiento()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition">Cancelar</button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold shadow-md transition flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Guardar Incumplimiento</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // 1. FUNCIONES DE LA INTERFAZ
         function mostrarFechaActual() {
             const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const hoy = new Date().toLocaleDateString('es-VE', opciones);
@@ -327,26 +311,16 @@
         function switchTab(tabId) {
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
             document.getElementById(`view-${tabId}`).classList.remove('hidden');
-            
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('bg-costazul-teal', 'text-white', 'shadow-md');
                 btn.classList.add('text-slate-300', 'hover:bg-white/10');
             });
-            
             const activeBtn = document.getElementById(`nav-${tabId}`);
             activeBtn.classList.remove('text-slate-300', 'hover:bg-white/10');
             activeBtn.classList.add('bg-costazul-teal', 'text-white', 'shadow-md');
-            
-            const titulos = {
-                requerimientos: 'Requerimientos',
-                incumplimientos: 'Incumplimientos',
-                aliados: 'Aliados Comerciales',
-                dashboard: 'Dashboard Gerencial',
-                configuracion: 'Configuración'
-            };
+            const titulos = { requerimientos: 'Requerimientos', incumplimientos: 'Incumplimientos', aliados: 'Aliados Comerciales', dashboard: 'Dashboard Gerencial', configuracion: 'Configuración' };
             document.getElementById('breadcrumb').textContent = titulos[tabId];
             document.getElementById('page-title').textContent = titulos[tabId];
-            
             if (window.innerWidth < 1024) {
                 document.getElementById('sidebar-nav').classList.add('hidden');
                 document.getElementById('sidebar-nav').classList.remove('flex');
@@ -359,47 +333,41 @@
             nav.classList.toggle('flex');
         }
 
-        // 2. LÓGICA DE REQUERIMIENTOS (FASE 3 COMPLETA)
+        // ==========================================
+        // LÓGICA DE REQUERIMIENTOS
+        // ==========================================
         let tickets = [];
 
         function abrirModalTicket() {
             document.getElementById('ticket-form').reset();
             document.getElementById('req-id').value = '';
-            
             const num = tickets.length + 1;
-            const idSimulado = `REQ-2026-${String(num).padStart(2, '0')}`;
-            document.getElementById('modal-ticket-id').textContent = idSimulado;
+            document.getElementById('modal-ticket-id').textContent = `REQ-2026-${String(num).padStart(2, '0')}`;
             document.getElementById('modal-title').textContent = 'Nuevo Requerimiento';
-            
             document.getElementById('ticket-modal').classList.remove('hidden');
             document.getElementById('ticket-modal').classList.add('flex');
         }
 
-        // Nueva función para editar
         function editarTicket(id) {
-            const ticket = tickets.find(t => t.id === id);
-            if (!ticket) return;
-
-            document.getElementById('req-id').value = ticket.id;
-            document.getElementById('req-aliado').value = ticket.aliado;
-            document.getElementById('req-nivel').value = ticket.nivel;
-            document.getElementById('req-local').value = ticket.local;
-            document.getElementById('req-solicitante').value = ticket.solicitante;
-            document.getElementById('req-area').value = ticket.area;
-            document.getElementById('req-tipo').value = ticket.tipo;
-            document.getElementById('req-prioridad').value = ticket.prioridad;
-            document.getElementById('req-descripcion').value = ticket.descripcion;
-
-            document.getElementById('modal-ticket-id').textContent = ticket.id;
+            const t = tickets.find(x => x.id === id);
+            if (!t) return;
+            document.getElementById('req-id').value = t.id;
+            document.getElementById('req-aliado').value = t.aliado;
+            document.getElementById('req-nivel').value = t.nivel;
+            document.getElementById('req-local').value = t.local;
+            document.getElementById('req-solicitante').value = t.solicitante;
+            document.getElementById('req-area').value = t.area;
+            document.getElementById('req-tipo').value = t.tipo;
+            document.getElementById('req-prioridad').value = t.prioridad;
+            document.getElementById('req-descripcion').value = t.descripcion;
+            document.getElementById('modal-ticket-id').textContent = t.id;
             document.getElementById('modal-title').textContent = 'Editar Requerimiento';
-
             document.getElementById('ticket-modal').classList.remove('hidden');
             document.getElementById('ticket-modal').classList.add('flex');
         }
 
-        // Nueva función para eliminar
         function eliminarTicket(id) {
-            if (confirm(`¿Estás seguro de que deseas eliminar el ticket ${id}? Esta acción no se puede deshacer.`)) {
+            if (confirm(`¿Eliminar el ticket ${id}?`)) {
                 tickets = tickets.filter(t => t.id !== id);
                 localStorage.setItem('costazul_tickets_fase3', JSON.stringify(tickets));
                 renderizarTablaTickets();
@@ -413,12 +381,10 @@
 
         function guardarTicket(e) {
             e.preventDefault();
-            
-            const idExistente = document.getElementById('req-id').value;
-
-            const ticketData = {
-                id: idExistente || `REQ-2026-${String(tickets.length + 1).padStart(2, '0')}`,
-                fecha: idExistente ? tickets.find(t => t.id === idExistente).fecha : new Date().toISOString(),
+            const idEx = document.getElementById('req-id').value;
+            const data = {
+                id: idEx || `REQ-2026-${String(tickets.length + 1).padStart(2, '0')}`,
+                fecha: idEx ? tickets.find(t => t.id === idEx).fecha : new Date().toISOString(),
                 aliado: document.getElementById('req-aliado').value,
                 nivel: document.getElementById('req-nivel').value,
                 local: document.getElementById('req-local').value,
@@ -429,97 +395,157 @@
                 descripcion: document.getElementById('req-descripcion').value,
                 estado: 'Pendiente'
             };
-
-            if (idExistente) {
-                // Actualizar ticket existente
-                const index = tickets.findIndex(t => t.id === idExistente);
-                if (index !== -1) tickets[index] = ticketData;
+            if (idEx) {
+                const i = tickets.findIndex(t => t.id === idEx);
+                if (i !== -1) tickets[i] = data;
             } else {
-                // Crear nuevo ticket
-                tickets.push(ticketData);
+                tickets.push(data);
             }
-
             localStorage.setItem('costazul_tickets_fase3', JSON.stringify(tickets));
-
             cerrarModalTicket();
             renderizarTablaTickets();
         }
 
         function renderizarTablaTickets() {
             const tbody = document.getElementById('tickets-table-body');
-            const emptyState = document.getElementById('empty-state-tickets');
-
-            if (tickets.length === 0) {
-                tbody.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-
-            const coloresPrioridad = {
-                'Crítica': 'bg-rose-50 text-rose-700 border-rose-200',
-                'Alta': 'bg-orange-50 text-orange-700 border-orange-200',
-                'Media': 'bg-blue-50 text-blue-700 border-blue-200',
-                'Baja': 'bg-slate-100 text-slate-600 border-slate-200'
-            };
-
-            const coloresEstado = {
-                'Pendiente': 'bg-amber-50 text-amber-700 border-amber-200',
-                'En Proceso': 'bg-sky-50 text-sky-700 border-sky-200',
-                'Resuelto': 'bg-emerald-50 text-emerald-700 border-emerald-200'
-            };
-
+            const empty = document.getElementById('empty-state-tickets');
+            if (tickets.length === 0) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
+            empty.classList.add('hidden');
+            const cPrio = { 'Crítica': 'bg-rose-50 text-rose-700 border-rose-200', 'Alta': 'bg-orange-50 text-orange-700 border-orange-200', 'Media': 'bg-blue-50 text-blue-700 border-blue-200', 'Baja': 'bg-slate-100 text-slate-600 border-slate-200' };
+            const cEst = { 'Pendiente': 'bg-amber-50 text-amber-700 border-amber-200', 'En Proceso': 'bg-sky-50 text-sky-700 border-sky-200', 'Resuelto': 'bg-emerald-50 text-emerald-700 border-emerald-200' };
             tbody.innerHTML = tickets.map(t => `
                 <tr class="hover:bg-slate-50 transition">
-                    <td class="py-3 px-4">
-                        <span class="font-mono font-bold text-xs text-costazul-navy bg-slate-100 px-2.5 py-1 rounded-lg">${t.id}</span>
-                    </td>
-                    <td class="py-3 px-4">
-                        <div class="font-bold text-slate-800">${t.aliado}</div>
-                        <div class="text-xs text-slate-500">${t.nivel} • ${t.local}</div>
-                    </td>
-                    <td class="py-3 px-4">
-                        <div class="text-xs font-semibold text-costazul-navy">${t.area}</div>
-                        <div class="text-xs text-slate-500">${t.tipo}</div>
-                    </td>
-                    <td class="py-3 px-4">
-                        <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold border ${coloresPrioridad[t.prioridad] || coloresPrioridad['Media']}">
-                            ${t.prioridad}
-                        </span>
-                    </td>
-                    <td class="py-3 px-4">
-                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold border ${coloresEstado[t.estado] || coloresEstado['Pendiente']}">
-                            ${t.estado}
-                        </span>
-                    </td>
-                    <td class="py-3 px-4 text-xs text-slate-500">
-                        ${new Date(t.fecha).toLocaleDateString('es-VE')}
-                    </td>
+                    <td class="py-3 px-4"><span class="font-mono font-bold text-xs text-costazul-navy bg-slate-100 px-2.5 py-1 rounded-lg">${t.id}</span></td>
+                    <td class="py-3 px-4"><div class="font-bold text-slate-800">${t.aliado}</div><div class="text-xs text-slate-500">${t.nivel} • ${t.local}</div></td>
+                    <td class="py-3 px-4"><div class="text-xs font-semibold text-costazul-navy">${t.area}</div><div class="text-xs text-slate-500">${t.tipo}</div></td>
+                    <td class="py-3 px-4"><span class="px-2.5 py-0.5 rounded-md text-xs font-semibold border ${cPrio[t.prioridad] || cPrio['Media']}">${t.prioridad}</span></td>
+                    <td class="py-3 px-4"><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold border ${cEst[t.estado] || cEst['Pendiente']}">${t.estado}</span></td>
+                    <td class="py-3 px-4 text-xs text-slate-500">${new Date(t.fecha).toLocaleDateString('es-VE')}</td>
                     <td class="py-3 px-4 text-right">
                         <div class="flex items-center justify-end gap-2">
-                            <button onclick="editarTicket('${t.id}')" class="p-1.5 rounded-lg text-costazul-blue hover:bg-blue-50 transition" title="Editar">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            <button onclick="eliminarTicket('${t.id}')" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition" title="Eliminar">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
+                            <button onclick="editarTicket('${t.id}')" class="p-1.5 rounded-lg text-costazul-blue hover:bg-blue-50 transition"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="eliminarTicket('${t.id}')" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </td>
                 </tr>
             `).join('');
         }
 
-        // 3. INICIALIZACIÓN
+        // ==========================================
+        // LÓGICA DE INCUMPLIMIENTOS (FASE 4.1)
+        // ==========================================
+        let incumplimientos = [];
+
+        function abrirModalIncumplimiento() {
+            document.getElementById('incumplimiento-form').reset();
+            document.getElementById('inc-id').value = '';
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('inc-fecha').value = hoy;
+            document.getElementById('incumplimiento-modal').classList.remove('hidden');
+            document.getElementById('incumplimiento-modal').classList.add('flex');
+        }
+
+        function editarIncumplimiento(id) {
+            const inc = incumplimientos.find(x => x.id === id);
+            if (!inc) return;
+            document.getElementById('inc-id').value = inc.id;
+            document.getElementById('inc-fecha').value = inc.fecha;
+            document.getElementById('inc-hora').value = inc.hora;
+            document.getElementById('inc-local').value = inc.local;
+            document.getElementById('inc-nombre-local').value = inc.nombreLocal;
+            document.getElementById('inc-tipo').value = inc.tipo;
+            document.getElementById('inc-reporta').value = inc.reportadoPor;
+            document.getElementById('inc-obs').value = inc.observaciones || '';
+            document.getElementById('incumplimiento-modal').classList.remove('hidden');
+            document.getElementById('incumplimiento-modal').classList.add('flex');
+        }
+
+        function eliminarIncumplimiento(id) {
+            if (confirm(`¿Eliminar este incumplimiento?`)) {
+                incumplimientos = incumplimientos.filter(x => x.id !== id);
+                localStorage.setItem('costazul_incumplimientos_fase4', JSON.stringify(incumplimientos));
+                renderizarTablaIncumplimientos();
+            }
+        }
+
+        function cerrarModalIncumplimiento() {
+            document.getElementById('incumplimiento-modal').classList.add('hidden');
+            document.getElementById('incumplimiento-modal').classList.remove('flex');
+        }
+
+        function guardarIncumplimiento(e) {
+            e.preventDefault();
+            const idEx = document.getElementById('inc-id').value;
+            const data = {
+                id: idEx || `INC-${Date.now()}`,
+                fecha: document.getElementById('inc-fecha').value,
+                hora: document.getElementById('inc-hora').value,
+                local: document.getElementById('inc-local').value.toUpperCase(),
+                nombreLocal: document.getElementById('inc-nombre-local').value,
+                tipo: document.getElementById('inc-tipo').value,
+                reportadoPor: document.getElementById('inc-reporta').value,
+                observaciones: document.getElementById('inc-obs').value
+            };
+            if (idEx) {
+                const i = incumplimientos.findIndex(x => x.id === idEx);
+                if (i !== -1) incumplimientos[i] = data;
+            } else {
+                incumplimientos.unshift(data); // Más recientes primero
+            }
+            localStorage.setItem('costazul_incumplimientos_fase4', JSON.stringify(incumplimientos));
+            cerrarModalIncumplimiento();
+            renderizarTablaIncumplimientos();
+        }
+
+        function renderizarTablaIncumplimientos() {
+            const tbody = document.getElementById('incumplimientos-table-body');
+            const empty = document.getElementById('empty-state-incumplimientos');
+            if (incumplimientos.length === 0) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
+            empty.classList.add('hidden');
+            
+            const cTipo = {
+                'Apertura Tardía': 'bg-amber-50 text-amber-700 border-amber-200',
+                'Cierre Anticipado': 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                'Cerrado en Horario': 'bg-rose-50 text-rose-700 border-rose-200'
+            };
+
+            tbody.innerHTML = incumplimientos.map(inc => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="py-3 px-4 text-xs text-slate-600">
+                        ${new Date(inc.fecha + 'T12:00:00').toLocaleDateString('es-VE')}
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-slate-800">${inc.local}</div>
+                        <div class="text-xs text-slate-500">${inc.nombreLocal}</div>
+                    </td>
+                    <td class="py-3 px-4 text-xs font-semibold text-slate-700">${inc.hora}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold border ${cTipo[inc.tipo] || cTipo['Apertura Tardía']}">
+                            ${inc.tipo}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-xs text-slate-500">${inc.reportadoPor}</td>
+                    <td class="py-3 px-4 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <button onclick="editarIncumplimiento('${inc.id}')" class="p-1.5 rounded-lg text-costazul-blue hover:bg-blue-50 transition"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="eliminarIncumplimiento('${inc.id}')" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // INICIALIZACIÓN
         document.addEventListener('DOMContentLoaded', () => {
             mostrarFechaActual();
             
-            const guardados = localStorage.getItem('costazul_tickets_fase3');
-            if (guardados) {
-                tickets = JSON.parse(guardados);
-            }
-            
+            const tGuardados = localStorage.getItem('costazul_tickets_fase3');
+            if (tGuardados) tickets = JSON.parse(tGuardados);
             renderizarTablaTickets();
+
+            const iGuardados = localStorage.getItem('costazul_incumplimientos_fase4');
+            if (iGuardados) incumplimientos = JSON.parse(iGuardados);
+            renderizarTablaIncumplimientos();
         });
     </script>
 </body>
