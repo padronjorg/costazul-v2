@@ -787,22 +787,14 @@
 const SHEET_NAME_INC = "Registros";
 const DRIVE_FOLDER_NAME = "Evidencias_Horarios_Costazul";
 
-function getOrCreateFolder(folderName) {
-  const folders = DriveApp.getFoldersByName(folderName);
-  if (folders.hasNext()) return folders.next();
-  return DriveApp.createFolder(folderName);
-}
-
 function savePhotosToDrive(photosArray, recordId, code) {
   if (!photosArray || !photosArray.length) return [];
-  const folder = getOrCreateFolder(DRIVE_FOLDER_NAME);
+  let folder;
+  const folders = DriveApp.getFoldersByName(DRIVE_FOLDER_NAME);
+  if (folders.hasNext()) { folder = folders.next(); } else { folder = DriveApp.createFolder(DRIVE_FOLDER_NAME); }
   const urls = [];
-
   photosArray.forEach((photo, idx) => {
-    if (typeof photo === "string" && photo.startsWith("http")) {
-      urls.push(photo);
-      return;
-    }
+    if (typeof photo === "string" && photo.startsWith("http")) { urls.push(photo); return; }
     if (typeof photo === "string" && photo.startsWith("data:image")) {
       const parts = photo.split(",");
       const mimeMatch = parts[0].match(/:(.*?);/);
@@ -819,29 +811,22 @@ function savePhotosToDrive(photosArray, recordId, code) {
 function doGet(e) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let result = { status: "ok", tickets: [], incumplimientos: [] };
-  
   let sheetReq = ss.getSheetByName(SHEET_NAME_REQ);
   if (sheetReq && sheetReq.getLastRow() > 1) {
     let data = sheetReq.getDataRange().getValues();
     let headers = data.shift();
     result.tickets = data.filter(r => r[0] !== "").map(row => {
-      let obj = {};
-      headers.forEach((h, i) => obj[h] = row[i]);
-      return obj;
+      let obj = {}; headers.forEach((h, i) => obj[h] = row[i]); return obj;
     });
   }
-
   let sheetInc = ss.getSheetByName(SHEET_NAME_INC);
   if (sheetInc && sheetInc.getLastRow() > 1) {
     let data = sheetInc.getDataRange().getValues();
     let headers = data.shift();
     result.incumplimientos = data.filter(r => r[0] !== "").map(row => {
-      let obj = {};
-      headers.forEach((h, i) => obj[h] = row[i]);
-      return obj;
+      let obj = {}; headers.forEach((h, i) => obj[h] = row[i]); return obj;
     });
   }
-
   return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -862,28 +847,17 @@ function doPost(e) {
       if (action === "create" || action === "update") {
         let rows = sheet.getDataRange().getValues();
         let rowIndex = -1;
-        for (let i = 1; i < rows.length; i++) {
-          if (rows[i][0] === item.id) { rowIndex = i + 1; break; }
-        }
+        for (let i = 1; i < rows.length; i++) { if (rows[i][0] === item.id) { rowIndex = i + 1; break; } }
         let rowValues = [item.id, item.fecha, item.aliado, item.nivel, item.local, item.solicitante, item.contacto, item.area, item.tipo, item.prioridad, item.estado, item.asignado || "Sin asignar", item.descripcion, new Date().toLocaleString("es-VE"), item.emailEnviado || "No"];
         if (rowIndex > 0) sheet.getRange(rowIndex, 1, 1, rowValues.length).setValues([rowValues]);
         else sheet.appendRow(rowValues);
       } else if (action === "send_email") {
-        MailApp.sendEmail({
-          to: item.destinatarios,
-          subject: item.asunto || ("[PARQUE COSTAZUL] Notificación Requerimiento " + item.id),
-          body: item.cuerpoMensaje,
-          name: "Gerencia de Atención Global - CC Parque Costazul"
-        });
+        MailApp.sendEmail({ to: item.destinatarios, subject: item.asunto || ("[PARQUE COSTAZUL] Notificación Requerimiento " + item.id), body: item.cuerpoMensaje, name: "Gerencia de Atención Global - CC Parque Costazul" });
         let rows = sheet.getDataRange().getValues();
-        for (let i = 1; i < rows.length; i++) {
-          if (rows[i][0] === item.id) { sheet.getRange(i + 1, 15).setValue("Sí (" + item.destinatarios + ")"); break; }
-        }
+        for (let i = 1; i < rows.length; i++) { if (rows[i][0] === item.id) { sheet.getRange(i + 1, 15).setValue("Sí (" + item.destinatarios + ")"); break; } }
       } else if (action === "delete") {
         let rows = sheet.getDataRange().getValues();
-        for (let i = 1; i < rows.length; i++) {
-          if (rows[i][0] === item.id) { sheet.deleteRow(i + 1); break; }
-        }
+        for (let i = 1; i < rows.length; i++) { if (rows[i][0] === item.id) { sheet.deleteRow(i + 1); break; } }
       }
     } else if (module === "incumplimientos") {
       let sheet = ss.getSheetByName(SHEET_NAME_INC);
@@ -895,35 +869,23 @@ function doPost(e) {
         const driveUrls = savePhotosToDrive(item.fotos || [], item.id, item.codigoLocal);
         let rows = sheet.getDataRange().getValues();
         let rowIndex = -1;
-        for (let i = 1; i < rows.length; i++) {
-          if (String(rows[i][0]) === String(item.id)) { rowIndex = i + 1; break; }
-        }
-        let rowValues = [
-          item.id, item.fecha, item.dia, item.hora, item.categoria,
-          item.isHoliday ? "Sí" : "No", item.isSeason ? "Sí" : "No",
-          item.codigoLocal, item.nombreLocal, item.tipoIncumplimiento,
-          item.minutosDesviacion || 0, item.reportadoPor, item.observaciones || "",
-          driveUrls.join(", "), item.emailEnviado || "No"
-        ];
+        for (let i = 1; i < rows.length; i++) { if (String(rows[i][0]) === String(item.id)) { rowIndex = i + 1; break; } }
+        let rowValues = [item.id, item.fecha, item.dia, item.hora, item.categoria, item.isHoliday ? "Sí" : "No", item.isSeason ? "Sí" : "No", item.codigoLocal, item.nombreLocal, item.tipoIncumplimiento, item.minutosDesviacion || 0, item.reportadoPor, item.observaciones || "", driveUrls.join(", "), item.emailEnviado || "No"];
         if (rowIndex > 0) sheet.getRange(rowIndex, 1, 1, 15).setValues([rowValues]);
         else sheet.appendRow(rowValues);
         return ContentService.createTextOutput(JSON.stringify({ status: "ok", fotosDrive: driveUrls })).setMimeType(ContentService.MimeType.JSON);
       } else if (action === "delete") {
         let rows = sheet.getDataRange().getValues();
-        for (let i = 1; i < rows.length; i++) {
-          if (String(rows[i][0]) === String(item.id)) { sheet.deleteRow(i + 1); break; }
-        }
+        for (let i = 1; i < rows.length; i++) { if (String(rows[i][0]) === String(item.id)) { sheet.deleteRow(i + 1); break; } }
       } else if (action === "send_email") {
-        MailApp.sendEmail({
-          to: item.destinatarios,
-          subject: item.asunto || ("[PARQUE COSTAZUL] Notificación Incumplimiento Horario - Local " + item.local),
-          body: item.cuerpoMensaje,
-          name: "Gerencia de Atención Global - CC Parque Costazul"
-        });
+        let horaInspeccion = String(item.hora || "");
+        if (horaInspeccion.includes("T")) { horaInspeccion = horaInspeccion.split("T")[1].substring(0, 5); }
+        else if (horaInspeccion.length > 5) { horaInspeccion = horaInspeccion.substring(0, 5); }
+        let cuerpoFinal = item.cuerpoMensaje;
+        cuerpoFinal = cuerpoFinal.replace(/Hora de inspección: [^\n]*/, "Hora de inspección: " + horaInspeccion + " (Desviación estimada: " + (item.minutosDesviacion || 0) + " min)");
+        MailApp.sendEmail({ to: item.destinatarios, subject: item.asunto || ("[PARQUE COSTAZUL] Notificación de Incumplimiento de Horario - Local " + item.local), body: cuerpoFinal, name: "Gerencia de Atención Global - CC Parque Costazul" });
         let rows = sheet.getDataRange().getValues();
-        for (let i = 1; i < rows.length; i++) {
-          if (String(rows[i][0]) === String(item.id)) { sheet.getRange(i + 1, 15).setValue("Sí (" + item.destinatarios + ")"); break; }
-        }
+        for (let i = 1; i < rows.length; i++) { if (String(rows[i][0]) === String(item.id)) { sheet.getRange(i + 1, 15).setValue("Sí (" + item.destinatarios + ")"); break; } }
       }
     }
     return ContentService.createTextOutput(JSON.stringify({ status: "ok" })).setMimeType(ContentService.MimeType.JSON);
@@ -960,9 +922,6 @@ function doPost(e) {
             }
         });
 
-        // ----------------------------------------------------
-        // GESTIÓN DE DATOS, CLOUD SYNC Y STORAGE
-        // ----------------------------------------------------
         function cargarDatos() {
             try {
                 const savedT = localStorage.getItem(STORAGE_KEY_TICKETS);
@@ -982,7 +941,7 @@ function doPost(e) {
                 actualizarContadoresGlobales();
                 return true;
             } catch (error) {
-                mostrarToast('No fue posible guardar: almacenamiento del navegador lleno (reduzca las fotos adjuntas).', 'error');
+                mostrarToast('No fue posible guardar: almacenamiento del navegador lleno.', 'error');
                 return false;
             }
         }
@@ -998,7 +957,7 @@ function doPost(e) {
                 });
                 return await response.json();
             } catch (error) {
-                console.error('Error enviando datos a Google Apps Script:', error);
+                console.error('Error enviando datos:', error);
                 return null;
             }
         }
@@ -1006,7 +965,7 @@ function doPost(e) {
         async function sincronizarDesdeSheets(notificar = false) {
             const url = localStorage.getItem(WEBHOOK_KEY);
             if (!url) {
-                if (notificar) mostrarToast('Configure primero la URL del Web App en Google Sheets & Drive', 'error');
+                if (notificar) mostrarToast('Configure primero la URL del Web App', 'error');
                 return;
             }
             const icon = document.getElementById('sync-header-icon');
@@ -1062,7 +1021,7 @@ function doPost(e) {
                 }
             } catch (e) {
                 console.error(e);
-                if (notificar) mostrarToast('No se pudo conectar con Google Sheets. Verifique la URL.', 'error');
+                if (notificar) mostrarToast('No se pudo conectar con Google Sheets.', 'error');
             } finally {
                 if (icon) icon.classList.remove('fa-spin');
             }
@@ -1070,8 +1029,7 @@ function doPost(e) {
 
         function getDemoTickets() {
             return [
-                { id: 'REQ-2026-NOV-001', fecha: '2026-11-14T09:15', aliado: 'Verona Colors', nivel: 'Edificio Oeste', local: 'EO-18', solicitante: 'Mariana Velásquez', contacto: '0414-7894512', area: 'Climatización', tipo: 'Incidencia Operativa', prioridad: 'Alta', estado: 'En Proceso', asignado: 'Coord. Mantenimiento', descripcion: 'Eficiencia baja en aire acondicionado central.', emailEnviado: 'No', bitacora: [{ fecha: '14/11/2026 09:20', texto: 'Ticket recibido y escalado.' }] },
-                { id: 'REQ-2026-NOV-002', fecha: '2026-11-15T10:30', aliado: 'Cines Unidos', nivel: 'Feria de Comida', local: 'FC-01', solicitante: 'Carlos Mendoza', contacto: '0412-3349871', area: 'Seguridad y Prevención', tipo: 'Permiso de Trabajo/Ingreso', prioridad: 'Media', estado: 'Resuelto', asignado: 'Jefatura de Seguridad', descripcion: 'Autorización ingreso nocturno cuadrilla.', emailEnviado: 'Sí', bitacora: [{ fecha: '15/11/2026 14:45', texto: 'Resuelto y cerrado conforme.' }] }
+                { id: 'REQ-2026-NOV-001', fecha: '2026-11-14T09:15', aliado: 'Verona Colors', nivel: 'Edificio Oeste', local: 'EO-18', solicitante: 'Mariana Velásquez', contacto: '0414-7894512', area: 'Climatización', tipo: 'Incidencia Operativa', prioridad: 'Alta', estado: 'En Proceso', asignado: 'Coord. Mantenimiento', descripcion: 'Eficiencia baja en aire acondicionado central.', emailEnviado: 'No', bitacora: [{ fecha: '14/11/2026 09:20', texto: 'Ticket recibido y escalado.' }] }
             ];
         }
 
@@ -1081,9 +1039,6 @@ function doPost(e) {
             ];
         }
 
-        // ----------------------------------------------------
-        // GENERACIÓN DE TICKET ID: REQ-YYYY-MMM-001 DINÁMICO
-        // ----------------------------------------------------
         function generarCodigoTicket(fechaISO) {
             const base = fechaISO ? new Date(fechaISO) : new Date();
             const fecha = isNaN(base.getTime()) ? new Date() : base;
@@ -1122,9 +1077,6 @@ function doPost(e) {
             document.getElementById('form-ticket-preview').textContent = codigo;
         }
 
-        // ----------------------------------------------------
-        // REGLAS DE HORARIOS Y INCUMPLIMIENTOS
-        // ----------------------------------------------------
         function prepararFormularioIncumplimiento() {
             const hoy = new Date().toISOString().slice(0, 10);
             document.getElementById('inc-fecha').value = hoy;
@@ -1161,19 +1113,19 @@ function doPost(e) {
             if (reportMins < openMins) {
                 tipo = 'Sin Incumplimiento (Horario Cumplido)';
                 desviacion = 0;
-                diagnostico = `Inspección previa a la apertura oficial (${openH}:00). El local aún no entra en horario operativo.`;
+                diagnostico = `Inspección previa a la apertura oficial (${openH}:00).`;
             } else if (reportMins >= closeMins) {
                 tipo = 'Sin Incumplimiento (Horario Cumplido)';
                 desviacion = 0;
-                diagnostico = `Inspección posterior al cierre oficial (${closeH}:00). El local cumplió su jornada.`;
+                diagnostico = `Inspección posterior al cierre oficial (${closeH}:00).`;
             } else if (reportMins <= midpoint) {
                 tipo = 'Apertura Tardía';
                 desviacion = Math.max(0, reportMins - openMins);
-                diagnostico = desviacion === 0 ? `Reporte en hora de apertura (${openH}:00).` : `Retraso de ${desviacion} min respecto a la apertura (${openH}:00).`;
+                diagnostico = `Retraso de ${desviacion} min respecto a la apertura.`;
             } else {
                 tipo = 'Cierre Anticipado';
                 desviacion = Math.max(0, closeMins - reportMins);
-                diagnostico = `Cierre anticipado por ${desviacion} min respecto al cierre (${closeH}:00).`;
+                diagnostico = `Cierre anticipado por ${desviacion} min.`;
             }
 
             const format12 = (hr) => {
@@ -1206,9 +1158,6 @@ function doPost(e) {
             document.getElementById('inc-eval-diagnostico').textContent = res.diagnostico;
         }
 
-        // ----------------------------------------------------
-        // GUARDAR NUEVOS REGISTROS (LOCAL + SHEETS/DRIVE)
-        // ----------------------------------------------------
         async function guardarNuevoRequerimiento(e) {
             e.preventDefault();
             const fechaInput = document.getElementById('req-fecha').value;
@@ -1241,7 +1190,6 @@ function doPost(e) {
             mostrarToast(`Ticket ${codigo} registrado`, 'success');
 
             if (localStorage.getItem(WEBHOOK_KEY)) {
-                mostrarToast('Sincronizando ticket con Google Sheets...', 'info');
                 await enviarAlWebhook('requerimientos', 'create', nuevo);
             }
 
@@ -1287,7 +1235,6 @@ function doPost(e) {
             mostrarToast('Acta de incumplimiento registrada', 'success');
 
             if (localStorage.getItem(WEBHOOK_KEY)) {
-                mostrarToast('Guardando acta y subiendo fotos a Google Drive...', 'info');
                 const res = await enviarAlWebhook('incumplimientos', 'create', nuevo);
                 if (res && Array.isArray(res.fotosDrive) && res.fotosDrive.length > 0) {
                     nuevo.fotos = res.fotosDrive;
@@ -1304,9 +1251,6 @@ function doPost(e) {
             cambiarTabConsulta('incumplimientos');
         }
 
-        // ----------------------------------------------------
-        // SISTEMA DE NOTIFICACIÓN POR CORREO ELECTRÓNICO
-        // ----------------------------------------------------
         function abrirModalCorreo(module, id) {
             emailContext = { module, id };
             const destInput = document.getElementById('email-destinatarios');
@@ -1323,10 +1267,20 @@ function doPost(e) {
             } else {
                 const inc = incumplimientos.find(x => x.id === id);
                 if (!inc) return;
+
+                // --- LIMPIEZA DE HORA PARA EVITAR FORMATO 1899-12-30 ---
+                let horaLimpia = String(inc.hora || "");
+                if (horaLimpia.includes("T")) {
+                    horaLimpia = horaLimpia.split("T")[1].substring(0, 5);
+                } else if (horaLimpia.length > 5) {
+                    horaLimpia = horaLimpia.substring(0, 5);
+                }
+                // -------------------------------------------------------
+
                 document.getElementById('email-modal-title').textContent = `Notificar Incumplimiento — Local ${inc.codigoLocal}`;
                 destInput.value = '';
                 asuntoInput.value = `[PARQUE COSTAZUL] Notificación de Incumplimiento de Horario - Local ${inc.codigoLocal} (${inc.nombreLocal})`;
-                cuerpoInput.value = `Estimado Aliado Comercial (${inc.nombreLocal} - Local ${inc.codigoLocal}),\n\nLe informamos que el día ${inc.fecha} (${inc.dia}) se dejó constancia de un incumplimiento en los horarios operativos establecidos por el Centro Comercial Parque Costazul:\n\n• Incidencia: ${inc.tipoIncumplimiento}\n• Hora de inspección: ${inc.hora} (Desviación estimada: ${inc.minutosDesviacion} min)\n• Observación: ${inc.observaciones || 'Local cerrado durante jornada operativa.'}\n\nAgradecemos tomar las previsiones necesarias para dar estricto cumplimiento al horario comercial vigente.\n\nAtentamente,\nGerencia de Atención Global\nCC Parque Costazul`;
+                cuerpoInput.value = `Estimado Aliado Comercial (${inc.nombreLocal} - Local ${inc.codigoLocal}),\n\nLe informamos que el día ${inc.fecha} (${inc.dia}) se dejó constancia de un incumplimiento en los horarios operativos establecidos por el Centro Comercial Parque Costazul:\n\n• Incidencia: ${inc.tipoIncumplimiento}\n• Hora de inspección: ${horaLimpia} (Desviación estimada: ${inc.minutosDesviacion} min)\n• Observación: ${inc.observaciones || 'Local cerrado durante jornada operativa.'}\n\nAgradecemos tomar las previsiones necesarias para dar estricto cumplimiento al horario comercial vigente.\n\nAtentamente,\nGerencia de Atención Global\nCC Parque Costazul`;
             }
 
             const modal = document.getElementById('email-modal');
@@ -1352,7 +1306,7 @@ function doPost(e) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             const invalidos = correos.filter(c => !emailRegex.test(c));
             if (correos.length === 0 || invalidos.length > 0) {
-                mostrarToast('Dirección(es) de correo inválida(s): ' + (invalidos.join(', ') || '(vacío)'), 'error');
+                mostrarToast('Dirección(es) de correo inválida(s)', 'error');
                 return;
             }
 
@@ -1361,12 +1315,11 @@ function doPost(e) {
                 if (t) {
                     t.emailEnviado = `Sí (${destinatarios})`;
                     if (!t.bitacora) t.bitacora = [];
-                    t.bitacora.push({ fecha: new Date().toLocaleString('es-VE'), texto: `Notificación enviada por correo a: ${destinatarios}` });
+                    t.bitacora.push({ fecha: new Date().toLocaleString('es-VE'), texto: `Notificación enviada a: ${destinatarios}` });
                     guardarDatos();
                     if (ticketSeleccionadoId === id) {
                         document.getElementById('modal-email-badge').textContent = t.emailEnviado;
                     }
-                    mostrarToast('Enviando correo institucional...', 'info');
                     await enviarAlWebhook('requerimientos', 'send_email', { id: t.id, destinatarios, asunto, cuerpoMensaje });
                 }
             } else {
@@ -1374,19 +1327,15 @@ function doPost(e) {
                 if (inc) {
                     inc.emailEnviado = `Sí (${destinatarios})`;
                     guardarDatos();
-                    mostrarToast('Enviando notificación al aliado...', 'info');
-                    await enviarAlWebhook('incumplimientos', 'send_email', { id: inc.id, local: inc.codigoLocal, destinatarios, asunto, cuerpoMensaje });
+                    await enviarAlWebhook('incumplimientos', 'send_email', { id: inc.id, local: inc.codigoLocal, destinatarios, asunto, cuerpoMensaje, minutosDesviacion: inc.minutosDesviacion });
                 }
             }
 
             renderizarTablaUnificada();
             cerrarModalCorreo();
-            mostrarToast(`Constancia guardada: Correo enviado a ${destinatarios}`, 'success');
+            mostrarToast(`Correo enviado a ${destinatarios}`, 'success');
         }
 
-        // ----------------------------------------------------
-        // NAVEGACIÓN Y VISTAS
-        // ----------------------------------------------------
         function switchTab(tabId) {
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
             document.getElementById(`view-${tabId}`).classList.remove('hidden');
@@ -1462,9 +1411,6 @@ function doPost(e) {
             renderizarTablaUnificada();
         }
 
-        // ----------------------------------------------------
-        // TABLA UNIFICADA CON CONSTANCIA DE EMAIL ENVIADO
-        // ----------------------------------------------------
         function renderizarTablaUnificada() {
             const theadRow = document.getElementById('table-head-row');
             const tbody = document.getElementById('table-body');
@@ -1500,7 +1446,7 @@ function doPost(e) {
                 tbody.innerHTML = filtrados.map(t => {
                     const emailEnviado = t.emailEnviado && t.emailEnviado.startsWith('Sí');
                     const emailBadge = emailEnviado
-                        ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200" title="${escapeHTML(t.emailEnviado)}"><i class="fa-solid fa-check-double"></i> Enviado</span>`
+                        ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-check-double"></i> Enviado</span>`
                         : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-500">Pendiente</span>`;
                     const idSeguro = escapeHTML(t.id);
 
@@ -1512,9 +1458,9 @@ function doPost(e) {
                         <td class="py-3.5 px-4"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${t.estado==='Pendiente'?'bg-amber-50 text-amber-700':t.estado==='En Proceso'?'bg-sky-50 text-sky-700':'bg-emerald-50 text-emerald-700'}">${t.estado}</span></td>
                         <td class="py-3.5 px-4 text-center">${emailBadge}</td>
                         <td class="py-3.5 px-4 text-right whitespace-nowrap space-x-1">
-                            <button onclick="abrirModalCorreo('ticket', '${t.id}')" title="Enviar correo a departamentos" class="px-2.5 py-1.5 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 rounded-lg text-xs font-semibold transition"><i class="fa-solid fa-envelope"></i></button>
+                            <button onclick="abrirModalCorreo('ticket', '${t.id}')" title="Enviar correo" class="px-2.5 py-1.5 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 rounded-lg text-xs font-semibold transition"><i class="fa-solid fa-envelope"></i></button>
                             <button onclick="abrirTicketModal('${t.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-costazul-navy hover:text-white rounded-lg text-xs font-semibold transition">Gestionar</button>
-                            <button onclick="eliminarTicket('${t.id}')" title="Eliminar ticket" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 rounded-lg text-xs font-semibold hover:bg-rose-100"><i class="fa-solid fa-trash-can"></i></button>
+                            <button onclick="eliminarTicket('${t.id}')" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 rounded-lg text-xs font-semibold hover:bg-rose-100"><i class="fa-solid fa-trash-can"></i></button>
                         </td>
                     </tr>`;
                 }).join('');
@@ -1546,7 +1492,7 @@ function doPost(e) {
                 tbody.innerHTML = filtrados.map(i => {
                     const emailEnviado = i.emailEnviado && i.emailEnviado.startsWith('Sí');
                     const emailBadge = emailEnviado
-                        ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200" title="${escapeHTML(i.emailEnviado)}"><i class="fa-solid fa-check-double"></i> Notificado</span>`
+                        ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-check-double"></i> Notificado</span>`
                         : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-500">Sin notificar</span>`;
 
                     return `
@@ -1557,7 +1503,7 @@ function doPost(e) {
                         <td class="py-3.5 px-4 text-center">${i.fotos && i.fotos.length > 0 ? `<button onclick="abrirLightbox('${i.fotos[0]}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold"><i class="fa-solid fa-image text-costazul-teal mr-1"></i>Ver (${i.fotos.length})</button>` : '<span class="text-xs text-slate-400">Sin foto</span>'}</td>
                         <td class="py-3.5 px-4 text-center">${emailBadge}</td>
                         <td class="py-3.5 px-4 text-right whitespace-nowrap space-x-1">
-                            <button onclick="abrirModalCorreo('incumplimiento', '${i.id}')" title="Notificar al aliado por correo" class="px-2.5 py-1.5 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 rounded-lg text-xs font-semibold transition"><i class="fa-solid fa-envelope"></i></button>
+                            <button onclick="abrirModalCorreo('incumplimiento', '${i.id}')" title="Notificar al aliado" class="px-2.5 py-1.5 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 rounded-lg text-xs font-semibold transition"><i class="fa-solid fa-envelope"></i></button>
                             <button onclick="eliminarIncumplimiento('${i.id}')" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 rounded-lg text-xs font-semibold hover:bg-rose-100"><i class="fa-solid fa-trash-can"></i></button>
                         </td>
                     </tr>`;
@@ -1572,9 +1518,6 @@ function doPost(e) {
             renderizarTablaUnificada();
         }
 
-        // ----------------------------------------------------
-        // DASHBOARD DE KPIS
-        // ----------------------------------------------------
         function actualizarDashboard() {
             const isDark = document.documentElement.classList.contains('dark');
             const tickColor = isDark ? '#cbd5e1' : '#475569';
@@ -1618,22 +1561,14 @@ function doPost(e) {
             charts[canvasId] = new Chart(ctx, { type, data, options: { responsive: true, maintainAspectRatio: false, ...options } });
         }
 
-        // ----------------------------------------------------
-        // UTILIDADES, DROPZONE, MODALES Y IMPRESIÓN
-        // ----------------------------------------------------
         function inicializarDropzone() {
             const dz = document.getElementById('inc-dropzone');
             const input = document.getElementById('inc-fotos-input');
             if (!dz || !input) return;
 
             dz.addEventListener('click', () => input.click());
-            dz.addEventListener('dragover', e => {
-                e.preventDefault();
-                dz.classList.add('border-costazul-teal', 'bg-costazul-tealLight/30');
-            });
-            dz.addEventListener('dragleave', () => {
-                dz.classList.remove('border-costazul-teal', 'bg-costazul-tealLight/30');
-            });
+            dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('border-costazul-teal', 'bg-costazul-tealLight/30'); });
+            dz.addEventListener('dragleave', () => { dz.classList.remove('border-costazul-teal', 'bg-costazul-tealLight/30'); });
             dz.addEventListener('drop', e => {
                 e.preventDefault();
                 dz.classList.remove('border-costazul-teal', 'bg-costazul-tealLight/30');
@@ -1728,18 +1663,18 @@ function doPost(e) {
         }
 
         async function eliminarIncumplimiento(id) {
-            if (!confirm('¿Eliminar esta acta de incumplimiento? Esta acción no se puede deshacer.')) return;
+            if (!confirm('¿Eliminar esta acta de incumplimiento?')) return;
             incumplimientos = incumplimientos.filter(i => i.id !== id);
             guardarDatos();
             renderizarTablaUnificada();
             if (localStorage.getItem(WEBHOOK_KEY)) {
                 await enviarAlWebhook('incumplimientos', 'delete', { id });
             }
-            mostrarToast('Acta de incumplimiento eliminada', 'info');
+            mostrarToast('Acta eliminada', 'info');
         }
 
         async function eliminarTicket(id) {
-            if (!confirm(`¿Eliminar el ticket ${id}? Esta acción no se puede deshacer.`)) return;
+            if (!confirm(`¿Eliminar el ticket ${id}?`)) return;
             tickets = tickets.filter(t => t.id !== id);
             guardarDatos();
             renderizarTablaUnificada();
@@ -1753,12 +1688,12 @@ function doPost(e) {
             const permitidos = ['image/jpeg', 'image/png', 'image/webp'];
             const disponibles = 4 - fotosIncTemp.length;
             if (disponibles <= 0) {
-                mostrarToast('Puede adjuntar un máximo de 4 imágenes de evidencia.', 'error');
+                mostrarToast('Máximo 4 imágenes.', 'error');
                 return;
             }
             Array.from(files).slice(0, disponibles).forEach(file => {
                 if (!permitidos.includes(file.type) || file.size > 5 * 1024 * 1024) {
-                    mostrarToast(`${file.name}: formato no admitido o supera 5 MB.`, 'error');
+                    mostrarToast(`${file.name}: formato no admitido o > 5MB.`, 'error');
                     return;
                 }
                 const reader = new FileReader();
@@ -1804,10 +1739,6 @@ function doPost(e) {
                 driveBtn.classList.remove('inline-flex');
             }
             const lbImg = document.getElementById('lightbox-img');
-            lbImg.onerror = function () {
-                this.onerror = null;
-                this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420"><rect fill="%230f172a" width="800" height="420"/><text fill="%2394a3b8" x="400" y="210" text-anchor="middle" font-family="sans-serif" font-size="20">Vista previa no disponible — use "Abrir en Drive"</text></svg>';
-            };
             lbImg.src = displaySrc;
             const modal = document.getElementById('lightbox-modal');
             modal.classList.remove('hidden');
@@ -1820,14 +1751,12 @@ function doPost(e) {
         }
 
         function abrirPlantillasTickets() {
-            const modal = document.getElementById('plantilla-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            document.getElementById('plantilla-modal').classList.remove('hidden');
+            document.getElementById('plantilla-modal').classList.add('flex');
         }
         function cerrarPlantillasTickets() {
-            const modal = document.getElementById('plantilla-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            document.getElementById('plantilla-modal').classList.add('hidden');
+            document.getElementById('plantilla-modal').classList.remove('flex');
         }
         function aplicarPlantillaTicket(area, tipo, prio, desc) {
             document.getElementById('req-area').value = area;
@@ -1841,14 +1770,12 @@ function doPost(e) {
         function abrirReporteMensual() {
             document.getElementById('reporte-mes').value = new Date().toISOString().slice(0, 7);
             generarContenidoReporteMensual();
-            const modal = document.getElementById('reporte-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            document.getElementById('reporte-modal').classList.remove('hidden');
+            document.getElementById('reporte-modal').classList.add('flex');
         }
         function cerrarReporteMensual() {
-            const modal = document.getElementById('reporte-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            document.getElementById('reporte-modal').classList.add('hidden');
+            document.getElementById('reporte-modal').classList.remove('flex');
         }
         function generarContenidoReporteMensual() {
             const mesVal = document.getElementById('reporte-mes').value;
@@ -1856,8 +1783,8 @@ function doPost(e) {
             const html = `
                 <div style="font-family: sans-serif;">
                     <h2 style="font-size: 16px; font-weight: bold; color: #0A2540;">Centro Comercial Parque Costazul — Gerencia de Atención Global</h2>
-                    <h3 style="font-size: 14px; margin-top: 4px;">Reporte Mensual de Incumplimientos de Horario (${mesVal})</h3>
-                    <p style="margin-top: 8px;">Total de actas registradas en el periodo: <strong>${incsMes.length}</strong></p>
+                    <h3 style="font-size: 14px; margin-top: 4px;">Reporte Mensual de Incumplimientos (${mesVal})</h3>
+                    <p style="margin-top: 8px;">Total de actas: <strong>${incsMes.length}</strong></p>
                     <table style="width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 11px;">
                         <thead>
                             <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1; text-align: left;">
@@ -1925,16 +1852,16 @@ function doPost(e) {
         function guardarWebhookURL() {
             const url = document.getElementById('webhook-url-input').value.trim();
             if (!esWebhookValido(url)) {
-                mostrarToast('URL no válida. Debe ser la URL /exec de una implementación de Google Apps Script (https).', 'error');
+                mostrarToast('URL no válida. Debe ser la URL /exec de Google Apps Script.', 'error');
                 return;
             }
             localStorage.setItem(WEBHOOK_KEY, url);
             actualizarEstadoVisualWebhook(url);
             if (url) {
-                mostrarToast('Webhook guardado. Sincronizando con Google Sheets...', 'success');
+                mostrarToast('Sincronizando con Google Sheets...', 'success');
                 sincronizarDesdeSheets(true);
             } else {
-                mostrarToast('Webhook desactivado (Modo Local)', 'info');
+                mostrarToast('Webhook desactivado', 'info');
             }
         }
 
