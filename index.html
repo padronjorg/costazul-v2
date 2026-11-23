@@ -3,311 +3,1390 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parque Costazul | Gerencia de Atención Global</title>
-    
+    <title>Parque Costazul | Gerencia de Atención Global — Sistema Integrado</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Plus Jakarta Sans', 'sans-serif'] },
                     colors: {
-                        costazul: { navy: '#0A2540', blue: '#103B66', teal: '#00A896', gold: '#D4AF37', slate: '#F4F7FA' }
+                        costazul: {
+                            navy: '#0A2540',
+                            blue: '#103B66',
+                            teal: '#00A896',
+                            tealLight: '#E6F6F4',
+                            gold: '#D4AF37',
+                            goldLight: '#FAF5E6',
+                            slate: '#F4F7FA'
+                        }
                     }
                 }
             }
         }
     </script>
-    
     <style>
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .fade-in { animation: fadeIn 0.25s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
-</head>
-<body class="bg-costazul-slate text-slate-800 antialiased font-sans">
-
-    <div class="min-h-screen flex flex-col lg:flex-row">
         
-        <aside class="w-full lg:w-72 bg-costazul-navy text-white flex flex-col justify-between shadow-xl z-20 shrink-0">
+        .dark body { background-color: #0f172a !important; color: #e2e8f0 !important; }
+        .dark aside { background-color: #020617 !important; }
+        .dark header { background-color: #1e293b !important; border-color: #334155 !important; }
+        .dark .bg-white { background-color: #1e293b !important; border-color: #334155 !important; }
+        .dark .bg-slate-50 { background-color: #0f172a !important; }
+        .dark .bg-slate-100 { background-color: #334155 !important; color: #e2e8f0 !important; }
+        .dark .text-costazul-navy { color: #f8fafc !important; }
+        .dark .text-slate-800 { color: #e2e8f0 !important; }
+        .dark .text-slate-600 { color: #cbd5e1 !important; }
+        .dark .text-slate-500 { color: #94a3b8 !important; }
+        .dark .border-slate-200 { border-color: #334155 !important; }
+        .dark .border-slate-100 { border-color: #334155 !important; }
+        .dark input, .dark select, .dark textarea { background-color: #0f172a !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+        .dark tr:hover { background-color: #334155 !important; }
+
+        @media print {
+            body * { visibility: hidden !important; }
+            #print-area, #print-area * { visibility: visible !important; }
+            #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; color: black; }
+            .no-print { display: none !important; }
+            @page { size: A4 portrait; margin: 15mm; }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body class="bg-costazul-slate text-slate-800 antialiased selection:bg-costazul-teal selection:text-white min-h-screen flex flex-col lg:flex-row">
+
+    <!-- CONTENEDOR DE TOASTS -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- NAVEGACIÓN LATERAL (SIDEBAR) -->
+    <aside class="w-full lg:w-72 bg-costazul-navy text-white flex flex-col justify-between shadow-xl z-20 shrink-0">
+        <div>
+            <div class="p-6 border-b border-white/10 flex items-center justify-between lg:justify-start gap-3">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-lg border border-white/20 shrink-0 p-1.5">
+                        <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 40 110 C 60 80, 90 85, 110 105 C 130 125, 150 110, 170 100 C 150 130, 120 140, 90 125 C 70 115, 50 120, 40 110 Z" fill="#1976D2"/>
+                            <path d="M 60 130 C 80 115, 110 120, 130 135 C 120 145, 90 145, 60 130 Z" fill="#00B0FF"/>
+                            <path d="M 65 90 C 80 50, 130 50, 145 90 C 120 80, 90 80, 65 90 Z" fill="#AED438"/>
+                            <path d="M 35 140 C 60 120, 100 130, 140 120 C 120 145, 60 155, 35 140 Z" fill="#00B0FF"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-extrabold tracking-tight text-lg text-white leading-tight block">PARQUE<br>COSTAZUL</span>
+                        <p class="text-[10px] font-medium uppercase tracking-widest text-costazul-gold mt-0.5">Atención Global</p>
+                    </div>
+                </div>
+                <button onclick="toggleMobileNav()" class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white" aria-label="Menú">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+
+            <nav id="sidebar-nav" class="hidden lg:flex flex-col p-4 space-y-1.5">
+                <div class="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Módulos Operativos</div>
+                <button onclick="switchTab('nuevo')" id="nav-nuevo" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all bg-costazul-teal text-white shadow-md">
+                    <i class="fa-solid fa-file-circle-plus w-5 text-center"></i><span>Nuevo Registro</span>
+                </button>
+                <button onclick="switchTab('consulta')" id="nav-consulta" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-list-check w-5 text-center"></i><span>Consulta Unificada</span></div>
+                    <span id="badge-total-pendientes" class="bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                </button>
+                <div class="px-3 pt-5 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Inteligencia & Nube</div>
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
+                    <i class="fa-solid fa-chart-pie w-5 text-center"></i><span>Dashboard Ejecutivo KPIs</span>
+                </button>
+                <button onclick="switchTab('sheets')" id="nav-sheets" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-table-cells w-5 text-center text-emerald-400"></i><span>Google Sheets & Drive</span></div>
+                    <span id="webhook-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+                </button>
+            </nav>
+        </div>
+        <div class="hidden lg:block p-4 border-t border-white/10 bg-black/15">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-9 h-9 rounded-full bg-costazul-gold/20 border border-costazul-gold text-costazul-gold flex items-center justify-center font-bold text-sm">AG</div>
+                <div class="overflow-hidden">
+                    <p class="text-xs font-semibold text-white truncate">Gerencia Atención Global</p>
+                    <p class="text-[11px] text-slate-400 truncate">atencionglobalccpca1@gmail.com</p>
+                </div>
+            </div>
+            <button onclick="confirmarReinicioDatos()" class="w-full py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-slate-300 hover:text-white transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-rotate-right"></i> Restablecer Demo Integrada
+            </button>
+        </div>
+    </aside>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="flex-1 flex flex-col min-w-0">
+        <!-- HEADER SUPERIOR -->
+        <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sticky top-0 z-10 shadow-sm">
             <div>
-                <div class="p-6 border-b border-white/10 flex items-center justify-between lg:justify-start gap-3">
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-costazul-teal to-sky-600 flex items-center justify-center shadow-lg border border-white/20 shrink-0">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
+                <div class="flex items-center gap-2 text-xs text-slate-500 font-medium mb-0.5">
+                    <span>Parque Costazul</span>
+                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    <span id="breadcrumb-current" class="text-costazul-teal font-semibold">Nuevo Registro</span>
+                </div>
+                <h1 id="page-title" class="text-xl sm:text-2xl font-bold text-costazul-navy tracking-tight">Centro Operativo Unificado</h1>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5">
+                <button type="button" onclick="sincronizarDesdeSheets(true)" id="btn-sync-header" class="hidden items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition">
+                    <i id="sync-header-icon" class="fa-solid fa-arrows-rotate"></i>
+                    <span>Sincronizar Nube</span>
+                </button>
+                <label for="global-season-toggle" class="hidden sm:flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl border border-slate-200 cursor-pointer text-xs font-semibold select-none">
+                    <i class="fa-solid fa-sun text-amber-500"></i>
+                    <span>Temporada (+1h)</span>
+                    <input type="checkbox" id="global-season-toggle" onchange="toggleTemporadaGlobal(event)" class="w-4 h-4 rounded text-costazul-teal focus:ring-costazul-teal">
+                </label>
+                <div class="hidden md:flex items-center gap-2 bg-slate-100 px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-600">
+                    <i class="fa-regular fa-calendar text-costazul-navy"></i>
+                    <span id="current-date-display"></span>
+                </div>
+                <button onclick="abrirReporteMensual()" class="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition flex items-center gap-2 shadow-sm" title="Reporte Mensual PDF Horarios">
+                    <i class="fa-solid fa-file-pdf"></i><span>Reporte Mensual</span>
+                </button>
+                <button onclick="abrirPaletaComandos()" class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition text-xs font-medium">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <kbd class="hidden lg:inline-block ml-1 px-1.5 py-0.5 rounded bg-white border border-slate-300 text-[10px] text-slate-500 font-mono shadow-sm">Ctrl K</kbd>
+                </button>
+                <button onclick="toggleDarkMode()" id="btn-dark-mode" class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition text-sm shadow-sm" title="Modo Oscuro">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <button onclick="exportarCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-semibold transition flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-file-excel"></i><span>Exportar CSV</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="p-4 sm:p-6 lg:p-8 flex-1 max-w-7xl w-full mx-auto">
+
+            <!-- ========================================================== -->
+            <!-- VISTA 1: NUEVO REGISTRO (SELECTOR DE MÓDULO)               -->
+            <!-- ========================================================== -->
+            <section id="view-nuevo" class="view-section fade-in space-y-6">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-costazul-tealLight text-costazul-teal flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-folder-plus"></i>
                         </div>
                         <div>
-                            <span class="font-extrabold tracking-tight text-lg text-white block">PARQUE</span>
-                            <span class="font-extrabold tracking-tight text-lg text-white block">COSTAZUL</span>
-                            <p class="text-[10px] font-medium uppercase tracking-widest text-costazul-gold mt-0.5">Atención Global</p>
+                            <h2 class="text-base font-bold text-costazul-navy">Seleccione el Tipo de Registro Operativo</h2>
+                            <p class="text-xs text-slate-500">Elija entre Gestión de Requerimientos/Tickets o Control de Incumplimientos</p>
                         </div>
                     </div>
-                    <button onclick="toggleMobileNav()" class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white" aria-label="Abrir menú">
-                        <i class="fa-solid fa-bars text-lg"></i>
-                    </button>
-                </div>
-
-                <nav id="sidebar-nav" class="hidden lg:flex flex-col p-4 space-y-1.5">
-                    <div class="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Gestión Operativa</div>
-                    <button onclick="switchTab('requerimientos')" id="nav-requerimientos" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all bg-costazul-teal text-white shadow-md">
-                        <i class="fa-solid fa-ticket w-5 text-center"></i><span>Requerimientos</span>
-                    </button>
-                    <button onclick="switchTab('incumplimientos')" id="nav-incumplimientos" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
-                        <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i><span>Incumplimientos</span>
-                    </button>
-                    <button onclick="switchTab('aliados')" id="nav-aliados" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
-                        <i class="fa-solid fa-store w-5 text-center"></i><span>Aliados</span>
-                    </button>
-                    <div class="px-3 pt-5 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Análisis</div>
-                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
-                        <i class="fa-solid fa-chart-pie w-5 text-center"></i><span>Dashboard</span>
-                    </button>
-                    <button onclick="switchTab('configuracion')" id="nav-configuracion" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-all">
-                        <i class="fa-solid fa-gear w-5 text-center"></i><span>Configuración</span>
-                    </button>
-                </nav>
-            </div>
-
-            <div class="hidden lg:block p-4 border-t border-white/10 bg-black/15">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full bg-costazul-gold/20 border border-costazul-gold text-costazul-gold flex items-center justify-center font-bold text-sm">AG</div>
-                    <div class="overflow-hidden">
-                        <p class="text-xs font-semibold text-white truncate">Gerencia Atención Global</p>
-                        <p class="text-[11px] text-slate-400 truncate">Isla de Margarita</p>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <main class="flex-1 flex flex-col min-w-0">
-            <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sticky top-0 z-10 shadow-sm">
-                <div>
-                    <div class="flex items-center gap-2 text-xs text-slate-500 font-medium mb-0.5">
-                        <span>Centro Comercial Parque Costazul</span>
-                        <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                        <span id="breadcrumb" class="text-costazul-teal font-semibold">Requerimientos</span>
-                    </div>
-                    <h1 id="page-title" class="text-xl sm:text-2xl font-bold text-costazul-navy tracking-tight">Requerimientos</h1>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="hidden md:flex items-center gap-2 bg-slate-100 px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-600">
-                        <i class="fa-regular fa-calendar text-costazul-navy"></i>
-                        <span id="current-date"></span>
-                    </div>
-                </div>
-            </header>
-
-            <div class="p-4 sm:p-6 lg:p-8 flex-1 max-w-7xl w-full mx-auto">
-                
-                <!-- VISTA 1: REQUERIMIENTOS -->
-                <section id="view-requerimientos" class="view-section fade-in space-y-5">
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-9 h-9 rounded-xl bg-costazul-teal/10 text-costazul-teal flex items-center justify-center text-sm"><i class="fa-solid fa-ticket"></i></span>
-                            <div>
-                                <h2 class="text-sm font-bold text-costazul-navy">Gestión de Requerimientos</h2>
-                                <p class="text-xs text-slate-500">Registra y da seguimiento a los tickets</p>
-                            </div>
-                        </div>
-                        <button onclick="abrirModalTicket()" class="px-4 py-2.5 rounded-xl bg-costazul-teal hover:bg-teal-700 text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-md">
-                            <i class="fa-solid fa-plus"></i> Nuevo Requerimiento
+                    <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 w-full sm:w-auto">
+                        <button type="button" onclick="cambiarSubformulario('ticket')" id="subform-btn-ticket" class="flex-1 sm:flex-initial px-5 py-2 rounded-lg text-xs font-bold transition bg-costazul-navy text-white shadow-sm">
+                            <i class="fa-solid fa-ticket mr-1.5"></i> Requerimiento / Ticket
+                        </button>
+                        <button type="button" onclick="cambiarSubformulario('incumplimiento')" id="subform-btn-incumplimiento" class="flex-1 sm:flex-initial px-5 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900">
+                            <i class="fa-solid fa-clock-rotate-left mr-1.5"></i> Incumplimiento de Horario
                         </button>
                     </div>
+                </div>
 
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                                        <th class="py-3.5 px-4">Ticket</th>
-                                        <th class="py-3.5 px-4">Aliado / Local</th>
-                                        <th class="py-3.5 px-4">Área / Tipo</th>
-                                        <th class="py-3.5 px-4">Prioridad</th>
-                                        <th class="py-3.5 px-4">Estado</th>
-                                        <th class="py-3.5 px-4">Fecha</th>
-                                        <th class="py-3.5 px-4 text-right">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tickets-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
-                            </table>
+                <!-- FORMULARIO 1A: REQUERIMIENTO / TICKET -->
+                <div id="subform-container-ticket" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-costazul-navy to-costazul-blue px-6 py-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-base font-semibold flex items-center gap-2"><i class="fa-solid fa-clipboard-list text-costazul-gold"></i> Ficha de Recepción de Solicitud / Incidencia (Ticket)</h2>
+                            <p class="text-xs text-slate-300 mt-1">El número de ticket se genera automáticamente con formato <code class="bg-white/10 px-1.5 py-0.5 rounded text-costazul-gold font-mono">REQ-YYYY-MMM-001</code> según la fecha seleccionada.</p>
                         </div>
-                        <div id="empty-state-tickets" class="p-8 text-center text-slate-500">
-                            <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-300"></i>
-                            <p class="text-sm">Aún no hay tickets registrados.</p>
-                            <p class="text-xs text-slate-400 mt-1">Haz clic en "Nuevo Requerimiento" para crear el primero.</p>
+                        <div class="flex items-center gap-3">
+                            <div class="bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-xl text-right">
+                                <span class="block text-[10px] uppercase tracking-wider text-slate-300">Ticket Autogenerado</span>
+                                <span id="form-ticket-preview" class="font-mono text-base font-bold text-costazul-gold">REQ-2026-NOV-001</span>
+                            </div>
+                            <button type="button" onclick="abrirPlantillasTickets()" class="px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold text-white transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Plantillas
+                            </button>
                         </div>
                     </div>
-                </section>
 
-                <!-- VISTA 2: INCUMPLIMIENTOS (FASE 4.1) -->
-                <section id="view-incumplimientos" class="view-section hidden fade-in space-y-5">
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center text-sm"><i class="fa-solid fa-clock-rotate-left"></i></span>
+                    <form id="form-requerimiento" onsubmit="guardarNuevoRequerimiento(event)" class="p-6 sm:p-8 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                             <div>
-                                <h2 class="text-sm font-bold text-costazul-navy">Control de Incumplimientos</h2>
-                                <p class="text-xs text-slate-500">Registra los incumplimientos de horario</p>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Número de Ticket Oficial</label>
+                                <div class="relative">
+                                    <input type="text" id="req-id" readonly class="w-full px-4 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-costazul-navy font-mono font-bold text-sm focus:outline-none cursor-not-allowed">
+                                    <i class="fa-solid fa-lock absolute right-3.5 top-3 text-slate-400 text-xs"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Fecha y Hora de Recepción *</label>
+                                <input type="datetime-local" id="req-fecha" required onchange="actualizarPreviewTicket()" class="w-full px-4 py-2.5 rounded-xl bg-white border border-slate-300 text-sm text-slate-800 focus:ring-2 focus:ring-costazul-teal outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Estado Inicial</label>
+                                <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-semibold">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span><span>Pendiente / Abierto</span>
+                                </div>
                             </div>
                         </div>
-                        <button onclick="abrirModalIncumplimiento()" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-md">
-                            <i class="fa-solid fa-plus"></i> Registrar Incumplimiento
-                        </button>
-                    </div>
-
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                                        <th class="py-3.5 px-4">Fecha</th>
-                                        <th class="py-3.5 px-4">Local</th>
-                                        <th class="py-3.5 px-4">Hora</th>
-                                        <th class="py-3.5 px-4">Tipo</th>
-                                        <th class="py-3.5 px-4">Reportado por</th>
-                                        <th class="py-3.5 px-4 text-right">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="incumplimientos-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
-                            </table>
+                        <hr class="border-slate-100">
+                        <div>
+                            <h3 class="text-sm font-bold text-costazul-navy mb-4 flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-lg bg-costazul-tealLight text-costazul-teal flex items-center justify-center text-xs"><i class="fa-solid fa-store"></i></span>
+                                Información del Aliado Comercial (Locatario)
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                                <div class="lg:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nombre del Aliado Comercial / Marca *</label>
+                                    <input type="text" id="req-aliado" required placeholder="Ej. Verona Colors..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none transition">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Ubicación / Sector *</label>
+                                    <select id="req-nivel" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
+                                        <option value="">Seleccione...</option>
+                                        <option value="Edificio Oeste">Edificio Oeste</option>
+                                        <option value="Edificio Este">Edificio Este</option>
+                                        <option value="Feria de Comida">Feria de Comida</option>
+                                        <option value="Zona VIP">Zona VIP</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Número de Local *</label>
+                                    <input type="text" id="req-local" required placeholder="Ej. L-104" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
+                                </div>
+                                <div class="lg:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nombre del Solicitante *</label>
+                                    <input type="text" id="req-solicitante" required placeholder="Quien reporta" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
+                                </div>
+                                <div class="lg:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Teléfono / Correo *</label>
+                                    <input type="text" id="req-contacto" required placeholder="0414-1234567" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
+                                </div>
+                            </div>
                         </div>
-                        <div id="empty-state-incumplimientos" class="p-8 text-center text-slate-500">
-                            <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-300"></i>
-                            <p class="text-sm">Aún no hay incumplimientos registrados.</p>
-                            <p class="text-xs text-slate-400 mt-1">Haz clic en "Registrar Incumplimiento" para crear el primero.</p>
+                        <hr class="border-slate-100">
+                        <div>
+                            <h3 class="text-sm font-bold text-costazul-navy mb-4 flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-lg bg-costazul-goldLight text-amber-700 flex items-center justify-center text-xs"><i class="fa-solid fa-layer-group"></i></span>
+                                Clasificación Operativa y Detalle
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Área Responsable *</label>
+                                    <select id="req-area" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
+                                        <option value="">Seleccione...</option>
+                                        <option value="Electricidad">Electricidad</option>
+                                        <option value="Climatización">Climatización</option>
+                                        <option value="Seguridad y Prevención">Seguridad y Prevención</option>
+                                        <option value="Administración y Finanzas">Administración y Finanzas</option>
+                                        <option value="Comercialización">Comercialización</option>
+                                        <option value="Servicios Generales">Servicios Generales</option>
+                                        <option value="Atención Global">Atención Global</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tipo de Solicitud *</label>
+                                    <select id="req-tipo" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
+                                        <option value="">Seleccione...</option>
+                                        <option value="Incidencia Operativa">Incidencia Operativa</option>
+                                        <option value="Mantenimiento Preventivo/Correctivo">Mantenimiento Preventivo/Correctivo</option>
+                                        <option value="Permiso de Trabajo/Ingreso">Permiso de Trabajo/Ingreso</option>
+                                        <option value="Consulta Administrativa">Consulta Administrativa</option>
+                                        <option value="Entrega/Recepción de Local">Entrega/Recepción de Local</option>
+                                        <option value="Sugerencia/Reclamo">Sugerencia/Reclamo</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Prioridad *</label>
+                                    <select id="req-prioridad" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
+                                        <option value="Baja">Baja</option>
+                                        <option value="Media" selected>Media</option>
+                                        <option value="Alta">Alta</option>
+                                        <option value="Crítica">Crítica</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Descripción Detallada *</label>
+                                <textarea id="req-descripcion" rows="4" required placeholder="Detalles de la incidencia o requerimiento..." class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none"></textarea>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-end gap-3">
+                            <button type="reset" onclick="setTimeout(prepararFormularioTicket, 10)" class="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition">Limpiar</button>
+                            <button type="submit" class="w-full sm:w-auto px-7 py-2.5 rounded-xl bg-costazul-navy hover:bg-costazul-blue text-white text-sm font-semibold shadow-md transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane text-costazul-teal"></i><span>Registrar Ticket Oficial</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- FORMULARIO 1B: INCUMPLIMIENTO DE HORARIOS -->
+                <div id="subform-container-incumplimiento" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hidden">
+                    <div class="bg-gradient-to-r from-costazul-navy to-costazul-blue px-6 py-5 text-white flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-semibold flex items-center gap-2"><i class="fa-solid fa-clock text-amber-300"></i> Acta de Incumplimiento de Horario Comercial</h2>
+                            <p class="text-xs text-slate-300 mt-1">Evaluación automatizada con las reglas de Parque Costazul y carga de evidencia fotográfica.</p>
                         </div>
                     </div>
-                </section>
 
-                <!-- VISTAS 3, 4 y 5 -->
-                <section id="view-aliados" class="view-section hidden fade-in">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
-                        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fa-solid fa-store"></i></div>
-                        <h2 class="text-xl font-bold text-costazul-navy mb-2">Base de Aliados Comerciales</h2>
-                        <p class="text-sm text-slate-500 max-w-md mx-auto">Aquí se gestionará la lista maestra de locales comerciales del centro.<br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción)</span></p>
+                    <form id="form-incumplimiento" onsubmit="guardarNuevoIncumplimiento(event)" class="p-6 sm:p-8 space-y-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Fecha del Acta *</label>
+                                <input type="date" id="inc-fecha" required onchange="actualizarEvaluacionHorario()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Día de la Semana (Auto)</label>
+                                <input type="text" id="inc-dia" readonly class="w-full px-4 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-sm font-bold text-costazul-navy cursor-not-allowed">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Hora de Inspección *</label>
+                                <input type="time" id="inc-hora" required onchange="actualizarEvaluacionHorario()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-bold focus:ring-2 focus:ring-costazul-teal outline-none">
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50/80 border border-slate-200 rounded-2xl p-4 space-y-3">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <span class="text-xs font-bold text-costazul-navy flex items-center gap-2"><i class="fa-solid fa-sliders text-costazul-teal"></i> Parámetros de Horario Oficial</span>
+                                <div class="flex items-center gap-4">
+                                    <label class="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                        <input type="checkbox" id="inc-feriado" onchange="actualizarEvaluacionHorario()" class="w-4 h-4 rounded text-costazul-teal"> Día Feriado (12:00 PM)
+                                    </label>
+                                    <label class="inline-flex items-center gap-2 text-xs font-semibold text-amber-800 cursor-pointer">
+                                        <input type="checkbox" id="inc-temporada" onchange="actualizarEvaluacionHorario()" class="w-4 h-4 rounded text-amber-600"> Temporada (+1h Cierre)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Categoría / Zona *</label>
+                                    <select id="inc-categoria" required onchange="actualizarEvaluacionHorario()" class="w-full px-4 py-2.5 rounded-xl bg-white border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
+                                        <option value="Tienda">Tienda Comercial (10am - 8pm)</option>
+                                        <option value="Feria de Comida">Feria de Comida (11am - 9pm)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Tipo de Incumplimiento (Auto-detectado)</label>
+                                    <select id="inc-tipo" class="w-full px-4 py-2.5 rounded-xl bg-white border border-slate-300 text-sm font-bold text-rose-700 focus:ring-2 focus:ring-costazul-teal outline-none">
+                                        <option value="Apertura Tardía">Apertura Tardía</option>
+                                        <option value="Cierre Anticipado">Cierre Anticipado</option>
+                                        <option value="Cerrado en Horario Operativo">Cerrado en Horario Operativo</option>
+                                        <option value="Sin Incumplimiento (Horario Cumplido)">Sin Incumplimiento (Horario Cumplido)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="inc-evaluacion-box" class="bg-white p-3 rounded-xl border border-slate-200 text-xs flex items-start gap-2.5">
+                                <i class="fa-solid fa-circle-info text-costazul-teal mt-0.5 text-sm"></i>
+                                <div>
+                                    <p id="inc-eval-oficial" class="font-bold text-costazul-navy">Horario esperado: —</p>
+                                    <p id="inc-eval-diagnostico" class="text-slate-600 mt-0.5">Seleccione la hora para evaluar la desviación exacta.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Número de Local *</label>
+                                <input type="text" id="inc-local-num" required placeholder="Ej. L-104" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm uppercase focus:ring-2 focus:ring-costazul-teal outline-none">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nombre del Local / Marca *</label>
+                                <input type="text" id="inc-local-nombre" required placeholder="Ej. Zara, Arturo's..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Inspector / Quien Reporta *</label>
+                                <input type="text" id="inc-reporta" required placeholder="Nombre del supervisor" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Observaciones Adicionales</label>
+                                <input type="text" id="inc-observaciones" placeholder="Santamaría abajo, sin personal..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Evidencia Fotográfica (Santamaría / Local Cerrado)</label>
+                            <div id="inc-dropzone" class="border-2 border-dashed border-slate-300 hover:border-costazul-teal bg-slate-50 rounded-xl p-4 text-center cursor-pointer transition">
+                                <input type="file" id="inc-fotos-input" accept="image/*" multiple class="hidden" onchange="procesarArchivosFoto(this.files)">
+                                <div class="flex flex-col items-center justify-center gap-1">
+                                    <div class="w-10 h-10 rounded-full bg-costazul-tealLight text-costazul-teal flex items-center justify-center text-base mb-1">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </div>
+                                    <p class="text-xs font-semibold text-slate-700">Haz clic para subir fotos o arrástralas aquí</p>
+                                    <p class="text-[11px] text-slate-400">Máx. 4 fotos (JPG, PNG o WebP · 5 MB c/u). Se comprimen y suben a Google Drive al guardar.</p>
+                                </div>
+                            </div>
+                            <div id="inc-fotos-preview" class="grid grid-cols-4 gap-2.5 mt-3 empty:hidden"></div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                            <button type="reset" onclick="fotosIncTemp=[]; renderPreviewsFotos(); setTimeout(prepararFormularioIncumplimiento, 10);" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition">Limpiar</button>
+                            <button type="submit" class="px-7 py-2.5 rounded-xl bg-costazul-navy hover:bg-costazul-blue text-white text-sm font-semibold shadow-md transition flex items-center gap-2">
+                                <i class="fa-solid fa-floppy-disk text-costazul-teal"></i><span>Registrar Incumplimiento</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ========================================================== -->
+            <!-- VISTA 2: CONSULTA UNIFICADA Y SEGUIMIENTO                  -->
+            <!-- ========================================================== -->
+            <section id="view-consulta" class="view-section hidden fade-in space-y-5">
+                <div class="flex items-center gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
+                    <button onclick="cambiarTabConsulta('tickets')" id="tab-consulta-tickets" class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition bg-costazul-navy text-white shadow-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-ticket"></i> Requerimientos / Tickets (<span id="count-tab-tickets">0</span>)
+                    </button>
+                    <button onclick="cambiarTabConsulta('incumplimientos')" id="tab-consulta-incumplimientos" class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Incumplimientos de Horario (<span id="count-tab-incumplimientos">0</span>)
+                    </button>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        <div class="md:col-span-4 relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                            <input type="text" id="search-input" oninput="renderizarTablaUnificada()" placeholder="Buscar por ticket, local o aliado..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none">
+                        </div>
+                        <div class="md:col-span-3">
+                            <select id="filter-categoria-ubicacion" onchange="renderizarTablaUnificada()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
+                                <option value="TODOS">Todas las Ubicaciones / Zonas</option>
+                                <option value="Edificio Oeste">Edificio Oeste</option>
+                                <option value="Edificio Este">Edificio Este</option>
+                                <option value="Feria de Comida">Feria de Comida</option>
+                                <option value="Zona VIP">Zona VIP</option>
+                                <option value="Tienda">Tienda Comercial</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-3">
+                            <select id="filter-secundario" onchange="renderizarTablaUnificada()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
+                                <option value="TODOS">Todos los Estados / Tipos</option>
+                                <option value="Pendiente">Pendientes / Abiertos</option>
+                                <option value="En Proceso">En Proceso</option>
+                                <option value="Resuelto">Resueltos</option>
+                                <option value="Apertura Tardía">Apertura Tardía</option>
+                                <option value="Cierre Anticipado">Cierre Anticipado</option>
+                                <option value="Cerrado en Horario Operativo">Cerrado en Horario</option>
+                                <option value="Sin Incumplimiento (Horario Cumplido)">Horario Cumplido</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2 flex items-center">
+                            <button onclick="limpiarFiltrosConsulta()" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-xs font-semibold transition">
+                                <i class="fa-solid fa-rotate-left mr-1"></i> Limpiar
+                            </button>
+                        </div>
                     </div>
-                </section>
+                </div>
 
-                <section id="view-dashboard" class="view-section hidden fade-in">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
-                        <div class="w-16 h-16 rounded-2xl bg-costazul-gold/10 text-costazul-gold flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fa-solid fa-chart-pie"></i></div>
-                        <h2 class="text-xl font-bold text-costazul-navy mb-2">Dashboard Gerencial</h2>
-                        <p class="text-sm text-slate-500 max-w-md mx-auto">Aquí se verán los KPIs unificados de todos los módulos.<br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción - Fase 6)</span></p>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr id="table-head-row" class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500"></tr>
+                            </thead>
+                            <tbody id="table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                        </table>
                     </div>
-                </section>
-
-                <section id="view-configuracion" class="view-section hidden fade-in">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
-                        <div class="w-16 h-16 rounded-2xl bg-slate-500/10 text-slate-600 flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fa-solid fa-gear"></i></div>
-                        <h2 class="text-xl font-bold text-costazul-navy mb-2">Configuración</h2>
-                        <p class="text-sm text-slate-500 max-w-md mx-auto">Aquí se configurarán los horarios, SLAs, conexiones y correos.<br><span class="text-xs text-slate-400 mt-2 inline-block">(Contenido en construcción)</span></p>
+                    <div id="empty-state-table" class="hidden p-12 text-center">
+                        <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3 text-xl"><i class="fa-solid fa-folder-open"></i></div>
+                        <h3 class="text-base font-bold text-slate-700">No hay registros coincidentes</h3>
+                        <p class="text-xs text-slate-500 mt-1">Ajuste los términos de búsqueda o filtros.</p>
                     </div>
-                </section>
+                </div>
+            </section>
 
-            </div>
-        </main>
-    </div>
+            <!-- ========================================================== -->
+            <!-- VISTA 3: DASHBOARD EJECUTIVO KPIs                          -->
+            <!-- ========================================================== -->
+            <section id="view-dashboard" class="view-section hidden fade-in space-y-6">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-xl bg-costazul-navy text-costazul-gold flex items-center justify-center text-sm"><i class="fa-solid fa-chart-line"></i></span>
+                        <div>
+                            <h2 class="text-sm font-bold text-costazul-navy">Tablero Ejecutivo Unificado</h2>
+                            <p class="text-xs text-slate-500">Métricas de tickets e incumplimientos de horarios en tiempo real</p>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- MODAL: TICKETS -->
-    <div id="ticket-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full my-auto overflow-hidden fade-in">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <span class="text-[11px] font-bold uppercase text-slate-400">Total Tickets</span>
+                        <p id="kpi-total-tickets" class="text-2xl font-extrabold text-costazul-navy mt-1">0</p>
+                        <span class="text-[11px] text-slate-500">Requerimientos registrados</span>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <span class="text-[11px] font-bold uppercase text-amber-600">Tickets Pendientes</span>
+                        <p id="kpi-tickets-pend" class="text-2xl font-extrabold text-amber-600 mt-1">0</p>
+                        <span class="text-[11px] text-slate-500">Requieren atención</span>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <span class="text-[11px] font-bold uppercase text-rose-600">Total Incumplimientos</span>
+                        <p id="kpi-total-inc" class="text-2xl font-extrabold text-rose-600 mt-1">0</p>
+                        <span class="text-[11px] text-slate-500">Actas de horario</span>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <span class="text-[11px] font-bold uppercase text-costazul-teal">SLA / Cierres a Tiempo</span>
+                        <p id="kpi-sla" class="text-2xl font-extrabold text-costazul-navy mt-1">0%</p>
+                        <span class="text-[11px] text-slate-500">Conformidad operativa</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-costazul-navy mb-1">Requerimientos por Área Responsable</h3>
+                        <p class="text-xs text-slate-400 mb-4">Distribución por gerencia</p>
+                        <div class="h-64 relative"><canvas id="chart-areas"></canvas></div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-costazul-navy mb-1">Incumplimientos por Tipo</h3>
+                        <p class="text-xs text-slate-400 mb-4">Aperturas tardías vs. cierres anticipados</p>
+                        <div class="h-64 relative flex items-center justify-center"><canvas id="chart-inc-tipos"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================== -->
+            <!-- VISTA 4: GOOGLE SHEETS & DRIVE SYNC                        -->
+            <!-- ========================================================== -->
+            <section id="view-sheets" class="view-section hidden fade-in space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-5 space-y-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-base font-bold text-costazul-navy flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-up text-costazul-teal"></i> Conexión Web App (Apps Script)</h3>
+                                <span id="webhook-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500">Desconectado</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-4 leading-relaxed">Pegue la URL terminada en <code class="bg-slate-100 px-1 rounded">/exec</code> de su implementación en Google Apps Script para sincronizar datos, subir fotos a Drive y enviar correos.</p>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">URL del Web App</label>
+                                    <input type="url" id="webhook-url-input" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono focus:ring-2 focus:ring-costazul-teal outline-none">
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="guardarWebhookURL()" class="flex-1 py-2.5 px-4 rounded-xl bg-costazul-navy hover:bg-costazul-blue text-white text-xs font-semibold transition">Guardar y Conectar</button>
+                                    <button onclick="sincronizarDesdeSheets(true)" class="py-2.5 px-4 rounded-xl bg-costazul-tealLight hover:bg-teal-100 text-costazul-teal border border-teal-200 text-xs font-semibold transition">Traer Datos</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4 border border-emerald-200"><i class="fa-solid fa-file-csv"></i></div>
+                            <h2 class="text-base font-bold text-costazul-navy">Respaldo Local en CSV</h2>
+                            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">Exporte los registros locales de requerimientos e incumplimientos en formato CSV compatible con Excel.</p>
+                            <div class="mt-4">
+                                <button onclick="exportarCSV()" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-sm transition flex items-center justify-center gap-2"><i class="fa-solid fa-download"></i> Descargar CSV</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-7 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-base font-bold text-costazul-navy">Código Backend (Google Apps Script Unificado)</h3>
+                                    <p class="text-xs text-slate-500">Soporta Tickets, Incumplimientos, Fotos en Drive y Correos desde <code class="text-costazul-teal">atencionglobalccpca1@gmail.com</code>:</p>
+                                </div>
+                                <button onclick="copiarCodigoAppsScript()" class="px-3.5 py-2 rounded-xl bg-costazul-navy hover:bg-costazul-blue text-white text-xs font-semibold transition flex items-center gap-1.5 shrink-0"><i class="fa-regular fa-copy"></i> Copiar Script</button>
+                            </div>
+                            <pre id="apps-script-code" class="bg-slate-900 text-emerald-300 p-4 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed max-h-80"></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- MODAL DE GESTIÓN Y SEGUIMIENTO DE TICKET -->
+    <div id="ticket-modal" class="fixed inset-0 z-40 hidden bg-slate-900/60 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden fade-in">
             <div class="bg-costazul-navy text-white px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <span id="modal-ticket-id" class="font-mono font-bold text-costazul-gold bg-white/10 px-3 py-1 rounded-lg text-sm">REQ-2026-01</span>
-                    <h3 id="modal-title" class="font-bold text-base leading-tight">Nuevo Requerimiento</h3>
-                </div>
-                <button onclick="cerrarModalTicket()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form id="ticket-form" onsubmit="guardarTicket(event)" class="p-6 overflow-y-auto max-h-[75vh] space-y-5">
-                <input type="hidden" id="req-id" />
-                <div>
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-costazul-navy mb-3 flex items-center gap-1.5"><i class="fa-solid fa-store text-costazul-teal"></i> Datos del Aliado</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Aliado / Marca *</label><input type="text" id="req-aliado" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none"></div>
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Ubicación *</label><select id="req-nivel" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none"><option value="">Seleccione...</option><option value="Edificio Oeste">Edificio Oeste</option><option value="Edificio Este">Edificio Este</option><option value="Feria de Comida">Feria de Comida</option><option value="Zona VIP">Zona VIP</option></select></div>
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Local *</label><input type="text" id="req-local" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none"></div>
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Solicitante *</label><input type="text" id="req-solicitante" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none"></div>
-                    </div>
-                </div>
-                <hr class="border-slate-100">
-                <div>
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-costazul-navy mb-3 flex items-center gap-1.5"><i class="fa-solid fa-layer-group text-costazul-gold"></i> Detalle del Requerimiento</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Área *</label><select id="req-area" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none"><option value="">Seleccione...</option><option value="Electricidad">Electricidad</option><option value="Climatización">Climatización</option><option value="Seguridad y Prevención">Seguridad y Prevención</option><option value="Administración y Finanzas">Administración</option><option value="Comercialización">Comercialización</option><option value="Servicios Generales">Servicios Generales</option></select></div>
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Tipo *</label><select id="req-tipo" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none"><option value="Incidencia Operativa">Incidencia Operativa</option><option value="Mantenimiento">Mantenimiento</option><option value="Permiso de Ingreso">Permiso de Ingreso</option><option value="Consulta Administrativa">Consulta Administrativa</option></select></div>
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Prioridad *</label><select id="req-prioridad" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-costazul-teal outline-none"><option value="Baja">Baja</option><option value="Media" selected>Media</option><option value="Alta">Alta</option><option value="Crítica">Crítica</option></select></div>
-                    </div>
-                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Descripción *</label><textarea id="req-descripcion" rows="3" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-costazul-teal outline-none"></textarea></div>
-                </div>
-                <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
-                    <button type="button" onclick="cerrarModalTicket()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition">Cancelar</button>
-                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-costazul-navy hover:bg-costazul-blue text-white text-sm font-semibold shadow-md transition flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Guardar Ticket</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: INCUMPLIMIENTOS (FASE 4.1) -->
-    <div id="incumplimiento-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full my-auto overflow-hidden fade-in">
-            <div class="bg-gradient-to-r from-rose-700 to-rose-900 text-white px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <span class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center"><i class="fa-solid fa-clock-rotate-left text-white"></i></span>
+                    <span id="modal-ticket-id" class="font-mono font-bold text-costazul-gold bg-white/10 px-3 py-1 rounded-lg text-sm">REQ-2026-NOV-001</span>
                     <div>
-                        <h3 class="font-bold text-base leading-tight">Registrar Incumplimiento</h3>
-                        <p class="text-[11px] text-rose-100">Registro de faltas en el horario comercial</p>
+                        <h3 id="modal-aliado" class="font-bold text-base leading-tight">Nombre del Aliado</h3>
+                        <p id="modal-ubicacion" class="text-xs text-slate-300">Edificio Oeste • Local L-101</p>
                     </div>
                 </div>
-                <button onclick="cerrarModalIncumplimiento()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="cerrarTicketModal()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="incumplimiento-form" onsubmit="guardarIncumplimiento(event)" class="p-6 overflow-y-auto max-h-[75vh] space-y-4">
-                <input type="hidden" id="inc-id" />
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Fecha *</label><input type="date" id="inc-fecha" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-rose-500 outline-none"></div>
-                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Hora del reporte *</label><input type="time" id="inc-hora" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-rose-500 outline-none"></div>
+            <div class="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="font-bold text-costazul-navy">Área: <span id="modal-det-area" class="font-normal"></span></span>
+                        <span class="font-bold text-costazul-navy">Solicitante: <span id="modal-det-solicitante" class="font-normal"></span></span>
+                    </div>
+                    <p id="modal-det-descripcion" class="text-slate-600 leading-relaxed pt-1"></p>
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Código de Local *</label><input type="text" id="inc-local" required placeholder="Ej. L-104" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm uppercase focus:ring-2 focus:ring-rose-500 outline-none"></div>
-                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Nombre del Local *</label><input type="text" id="inc-nombre-local" required placeholder="Ej. Zara" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-rose-500 outline-none"></div>
-                </div>
-
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Incumplimiento *</label>
-                        <select id="inc-tipo" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-rose-500 outline-none">
-                            <option value="Apertura Tardía">Apertura Tardía</option>
-                            <option value="Cierre Anticipado">Cierre Anticipado</option>
-                            <option value="Cerrado en Horario">Cerrado en Horario (Grave)</option>
+                        <label class="block font-semibold text-slate-600 mb-1">Estado del Ticket</label>
+                        <select id="modal-edit-estado" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white font-semibold focus:ring-2 focus:ring-costazul-teal outline-none">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Resuelto">Resuelto</option>
                         </select>
                     </div>
-                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Reportado por *</label><input type="text" id="inc-reporta" required placeholder="Tu nombre" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-rose-500 outline-none"></div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Constancia de Notificación Email</label>
+                        <div id="modal-email-badge" class="px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 font-semibold text-slate-600">No enviado</div>
+                    </div>
                 </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">Responsable Asignado</label>
+                    <input type="text" id="modal-edit-asignado" placeholder="Ej. Coord. Mantenimiento" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-costazul-teal outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">Nota a la Bitácora de Seguimiento</label>
+                    <textarea id="modal-nueva-nota" rows="2" placeholder="Detalle de la actuación..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-costazul-teal outline-none"></textarea>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-500 uppercase tracking-wider mb-2">Bitácora</h4>
+                    <div id="modal-bitacora-list" class="space-y-2 max-h-36 overflow-y-auto"></div>
+                </div>
+            </div>
+            <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <button type="button" onclick="abrirModalCorreo('ticket', ticketSeleccionadoId)" class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold shadow-sm transition flex items-center gap-2">
+                    <i class="fa-solid fa-envelope"></i> Notificar a Departamentos
+                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="cerrarTicketModal()" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-600 text-xs font-semibold">Cancelar</button>
+                    <button type="button" onclick="guardarCambiosTicketModal()" class="px-5 py-2 rounded-xl bg-costazul-teal hover:bg-teal-700 text-white text-xs font-semibold">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <div><label class="block text-xs font-semibold text-slate-700 mb-1">Observaciones (Opcional)</label><textarea id="inc-obs" rows="2" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-rose-500 outline-none"></textarea></div>
-
-                <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
-                    <button type="button" onclick="cerrarModalIncumplimiento()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition">Cancelar</button>
-                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold shadow-md transition flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Guardar Incumplimiento</button>
+    <!-- MODAL DE COMPOSICIÓN Y ENVÍO DE CORREO ELECTRÓNICO -->
+    <div id="email-modal" class="fixed inset-0 z-50 hidden bg-slate-900/65 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-xl w-full overflow-hidden fade-in">
+            <div class="bg-violet-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-paper-plane text-violet-300"></i>
+                    <div>
+                        <h3 id="email-modal-title" class="font-bold text-sm">Enviar Notificación por Correo</h3>
+                        <p class="text-[11px] text-violet-200">Remitente: atencionglobalccpca1@gmail.com</p>
+                    </div>
+                </div>
+                <button onclick="cerrarModalCorreo()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="procesarEnvioCorreo(event)" class="p-6 space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Para (Direcciones de correo separadas por coma) *</label>
+                    <input type="text" id="email-destinatarios" required placeholder="ejemplo@parquecostazul.com, otro@correo.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-violet-500 outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Asunto *</label>
+                    <input type="text" id="email-asunto" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-slate-50 font-semibold focus:ring-2 focus:ring-violet-500 outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Cuerpo del Mensaje *</label>
+                    <textarea id="email-cuerpo" rows="7" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-violet-500 outline-none leading-relaxed"></textarea>
+                </div>
+                <div class="pt-2 flex items-center justify-end gap-3">
+                    <button type="button" onclick="cerrarModalCorreo()" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-600 font-semibold">Cancelar</button>
+                    <button type="submit" id="btn-enviar-email-submit" class="px-5 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-envelope-circle-check"></i><span>Enviar Correo y Registrar Constancia</span>
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- LIGHTBOX PARA FOTOS DE INCUMPLIMIENTOS -->
+    <div id="lightbox-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/85 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl">
+            <div class="px-5 py-3.5 bg-costazul-navy text-white flex items-center justify-between">
+                <h4 id="lightbox-title" class="font-bold text-sm">Evidencia Fotográfica</h4>
+                <button onclick="cerrarLightbox()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="bg-slate-900 flex items-center justify-center p-4 max-h-[70vh] relative">
+                <img id="lightbox-img" src="" alt="Evidencia" class="max-h-[60vh] object-contain">
+                <a id="lightbox-drive-btn" href="#" target="_blank" rel="noopener noreferrer" class="hidden absolute bottom-3 right-3 bg-costazul-navy/90 text-white text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/20 items-center gap-1.5">
+                    <i class="fa-brands fa-google-drive text-emerald-400"></i> Abrir en Drive
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REPORTE MENSUAL IMPRIMIBLE -->
+    <div id="reporte-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden my-auto">
+            <div class="bg-costazul-navy px-5 py-4 text-white flex items-center justify-between">
+                <h3 class="font-bold text-sm">Reporte Mensual de Incumplimientos</h3>
+                <button onclick="cerrarReporteMensual()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="text-xs font-bold text-slate-700">Mes:</label>
+                    <input type="month" id="reporte-mes" onchange="generarContenidoReporteMensual()" class="px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white">
+                    <button onclick="imprimirReporteMensual()" class="ml-auto px-4 py-2 text-xs font-bold bg-costazul-navy text-white rounded-xl shadow-sm"><i class="fa-solid fa-print mr-1"></i> Imprimir PDF</button>
+                </div>
+                <div id="reporte-contenido-imprimible" class="p-6 bg-white border border-slate-200 rounded-xl text-xs space-y-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PLANTILLAS RÁPIDAS TICKETS -->
+    <div id="plantilla-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full p-5 space-y-3">
+            <div class="flex items-center justify-between border-b pb-2">
+                <h3 class="font-bold text-sm text-costazul-navy">Plantillas Rápidas para Tickets</h3>
+                <button onclick="cerrarPlantillasTickets()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-2">
+                <button onclick="aplicarPlantillaTicket('Electricidad', 'Incidencia Operativa', 'Alta', 'Falla eléctrica parcial en tablero de alimentación principal del local.')" class="w-full text-left p-3 rounded-xl border hover:border-costazul-teal hover:bg-teal-50/50 transition">
+                    <p class="font-bold text-xs text-costazul-navy">Falla Eléctrica</p>
+                    <p class="text-[11px] text-slate-500">Electricidad • Alta</p>
+                </button>
+                <button onclick="aplicarPlantillaTicket('Climatización', 'Mantenimiento Preventivo/Correctivo', 'Media', 'Deficiencia en suministro de aire acondicionado central.')" class="w-full text-left p-3 rounded-xl border hover:border-costazul-teal hover:bg-teal-50/50 transition">
+                    <p class="font-bold text-xs text-costazul-navy">Climatización / HVAC</p>
+                    <p class="text-[11px] text-slate-500">Climatización • Media</p>
+                </button>
+                <button onclick="aplicarPlantillaTicket('Servicios Generales', 'Incidencia Operativa', 'Crítica', 'Fuga de agua detectada en acometida sanitaria posterior.')" class="w-full text-left p-3 rounded-xl border hover:border-costazul-teal hover:bg-teal-50/50 transition">
+                    <p class="font-bold text-xs text-costazul-navy">Fuga de Agua / Sanitaria</p>
+                    <p class="text-[11px] text-slate-500">Servicios Generales • Crítica</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PALETA DE COMANDOS (CTRL+K) -->
+    <div id="command-palette" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm items-start justify-center pt-[15vh] px-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-xl w-full overflow-hidden">
+            <div class="flex items-center px-4 py-3 border-b border-slate-100">
+                <i class="fa-solid fa-magnifying-glass text-slate-400 mr-3"></i>
+                <input type="text" id="command-input" placeholder="Buscar vistas, tickets o acciones..." class="w-full bg-transparent text-sm text-slate-800 focus:outline-none" oninput="filtrarComandos()">
+                <kbd class="px-2 py-1 rounded bg-slate-100 text-[10px] text-slate-500 font-mono ml-2">ESC</kbd>
+            </div>
+            <div id="command-results" class="max-h-72 overflow-y-auto p-2 space-y-1 text-xs"></div>
+        </div>
+    </div>
+
+    <!-- ÁREA DE IMPRESIÓN PARA REPORTE -->
+    <div id="print-area" style="display:none;"></div>
+
+    <!-- SCRIPT PRINCIPAL DE LA APLICACIÓN INTEGRADA -->
     <script>
-        function mostrarFechaActual() {
-            const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const hoy = new Date().toLocaleDateString('es-VE', opciones);
-            document.getElementById('current-date').textContent = hoy.charAt(0).toUpperCase() + hoy.slice(1);
+        const STORAGE_KEY_TICKETS = 'costazul_integrado_tickets_v1';
+        const STORAGE_KEY_INC = 'costazul_integrado_incumplimientos_v1';
+        const WEBHOOK_KEY = 'costazul_integrado_webhook_v1';
+        const DARK_KEY = 'costazul_integrado_dark_v1';
+        const MESES_ABREV = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+        const DIAS_SEMANA = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>'"]/g, char => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            })[char]);
         }
 
+        const APPS_SCRIPT_CODE = `const SHEET_NAME_REQ = "KPI_Atencion_Global_Costazul";
+const SHEET_NAME_INC = "Registros";
+const DRIVE_FOLDER_NAME = "Evidencias_Horarios_Costazul";
+
+function getOrCreateFolder(folderName) {
+  const folders = DriveApp.getFoldersByName(folderName);
+  if (folders.hasNext()) return folders.next();
+  return DriveApp.createFolder(folderName);
+}
+
+function savePhotosToDrive(photosArray, recordId, code) {
+  if (!photosArray || !photosArray.length) return [];
+  const folder = getOrCreateFolder(DRIVE_FOLDER_NAME);
+  const urls = [];
+
+  photosArray.forEach((photo, idx) => {
+    if (typeof photo === "string" && photo.startsWith("http")) {
+      urls.push(photo);
+      return;
+    }
+    if (typeof photo === "string" && photo.startsWith("data:image")) {
+      const parts = photo.split(",");
+      const mimeMatch = parts[0].match(/:(.*?);/);
+      const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
+      const blob = Utilities.newBlob(Utilities.base64Decode(parts[1]), mimeType, code + "_" + recordId + "_" + (idx + 1) + ".jpg");
+      const file = folder.createFile(blob);
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      urls.push("https://drive.google.com/file/d/" + file.getId() + "/view");
+    }
+  });
+  return urls;
+}
+
+function doGet(e) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let result = { status: "ok", tickets: [], incumplimientos: [] };
+  
+  let sheetReq = ss.getSheetByName(SHEET_NAME_REQ);
+  if (sheetReq && sheetReq.getLastRow() > 1) {
+    let data = sheetReq.getDataRange().getValues();
+    let headers = data.shift();
+    result.tickets = data.filter(r => r[0] !== "").map(row => {
+      let obj = {};
+      headers.forEach((h, i) => obj[h] = row[i]);
+      return obj;
+    });
+  }
+
+  let sheetInc = ss.getSheetByName(SHEET_NAME_INC);
+  if (sheetInc && sheetInc.getLastRow() > 1) {
+    let data = sheetInc.getDataRange().getValues();
+    let headers = data.shift();
+    result.incumplimientos = data.filter(r => r[0] !== "").map(row => {
+      let obj = {};
+      headers.forEach((h, i) => obj[h] = row[i]);
+      return obj;
+    });
+  }
+
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    const payload = JSON.parse(e.postData.contents);
+    const module = payload.module;
+    const action = payload.action;
+    const item = payload.data;
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    if (module === "requerimientos") {
+      let sheet = ss.getSheetByName(SHEET_NAME_REQ);
+      if (!sheet) {
+        sheet = ss.insertSheet(SHEET_NAME_REQ);
+        sheet.appendRow(["Ticket_ID","Fecha_Recepcion","Aliado_Comercial","Ubicacion_Sector","Local","Solicitante","Contacto","Area_Responsable","Tipo_Solicitud","Prioridad","Estado","Responsable_Asignado","Descripcion","Ultima_Actualizacion","Email_Enviado"]);
+      }
+      if (action === "create" || action === "update") {
+        let rows = sheet.getDataRange().getValues();
+        let rowIndex = -1;
+        for (let i = 1; i < rows.length; i++) {
+          if (rows[i][0] === item.id) { rowIndex = i + 1; break; }
+        }
+        let rowValues = [item.id, item.fecha, item.aliado, item.nivel, item.local, item.solicitante, item.contacto, item.area, item.tipo, item.prioridad, item.estado, item.asignado || "Sin asignar", item.descripcion, new Date().toLocaleString("es-VE"), item.emailEnviado || "No"];
+        if (rowIndex > 0) sheet.getRange(rowIndex, 1, 1, rowValues.length).setValues([rowValues]);
+        else sheet.appendRow(rowValues);
+      } else if (action === "send_email") {
+        MailApp.sendEmail({
+          to: item.destinatarios,
+          subject: item.asunto || ("[PARQUE COSTAZUL] Notificación Requerimiento " + item.id),
+          body: item.cuerpoMensaje,
+          name: "Gerencia de Atención Global - CC Parque Costazul"
+        });
+        let rows = sheet.getDataRange().getValues();
+        for (let i = 1; i < rows.length; i++) {
+          if (rows[i][0] === item.id) { sheet.getRange(i + 1, 15).setValue("Sí (" + item.destinatarios + ")"); break; }
+        }
+      } else if (action === "delete") {
+        let rows = sheet.getDataRange().getValues();
+        for (let i = 1; i < rows.length; i++) {
+          if (rows[i][0] === item.id) { sheet.deleteRow(i + 1); break; }
+        }
+      }
+    } else if (module === "incumplimientos") {
+      let sheet = ss.getSheetByName(SHEET_NAME_INC);
+      if (!sheet) {
+        sheet = ss.insertSheet(SHEET_NAME_INC);
+        sheet.appendRow(["ID","Fecha","Dia","Hora","Categoria","Feriado","Temporada","Local","NombreLocal","TipoIncumplimiento","MinutosDesviacion","ReportadoPor","Observaciones","FotosDrive","Email_Enviado"]);
+      }
+      if (action === "create" || action === "update") {
+        const driveUrls = savePhotosToDrive(item.fotos || [], item.id, item.codigoLocal);
+        let rows = sheet.getDataRange().getValues();
+        let rowIndex = -1;
+        for (let i = 1; i < rows.length; i++) {
+          if (String(rows[i][0]) === String(item.id)) { rowIndex = i + 1; break; }
+        }
+        let rowValues = [
+          item.id, item.fecha, item.dia, item.hora, item.categoria,
+          item.isHoliday ? "Sí" : "No", item.isSeason ? "Sí" : "No",
+          item.codigoLocal, item.nombreLocal, item.tipoIncumplimiento,
+          item.minutosDesviacion || 0, item.reportadoPor, item.observaciones || "",
+          driveUrls.join(", "), item.emailEnviado || "No"
+        ];
+        if (rowIndex > 0) sheet.getRange(rowIndex, 1, 1, 15).setValues([rowValues]);
+        else sheet.appendRow(rowValues);
+        return ContentService.createTextOutput(JSON.stringify({ status: "ok", fotosDrive: driveUrls })).setMimeType(ContentService.MimeType.JSON);
+      } else if (action === "delete") {
+        let rows = sheet.getDataRange().getValues();
+        for (let i = 1; i < rows.length; i++) {
+          if (String(rows[i][0]) === String(item.id)) { sheet.deleteRow(i + 1); break; }
+        }
+      } else if (action === "send_email") {
+        MailApp.sendEmail({
+          to: item.destinatarios,
+          subject: item.asunto || ("[PARQUE COSTAZUL] Notificación Incumplimiento Horario - Local " + item.local),
+          body: item.cuerpoMensaje,
+          name: "Gerencia de Atención Global - CC Parque Costazul"
+        });
+        let rows = sheet.getDataRange().getValues();
+        for (let i = 1; i < rows.length; i++) {
+          if (String(rows[i][0]) === String(item.id)) { sheet.getRange(i + 1, 15).setValue("Sí (" + item.destinatarios + ")"); break; }
+        }
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({ status: "ok" })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
+  }
+}`;
+
+        let tickets = [];
+        let incumplimientos = [];
+        let currentTabConsulta = 'tickets';
+        let subformularioActual = 'ticket';
+        let fotosIncTemp = [];
+        let ticketSeleccionadoId = null;
+        let emailContext = { module: null, id: null };
+        let charts = {};
+        let isTemporadaGlobal = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('apps-script-code').textContent = APPS_SCRIPT_CODE;
+            if (localStorage.getItem(DARK_KEY) === '1') aplicarModoOscuro(true);
+            cargarDatos();
+            cargarConfigWebhook();
+            mostrarFechaActual();
+            prepararFormularioTicket();
+            prepararFormularioIncumplimiento();
+            inicializarDropzone();
+            activarCierrePorFondo(['ticket-modal', 'email-modal', 'lightbox-modal', 'plantilla-modal', 'command-palette', 'reporte-modal']);
+            renderizarTablaUnificada();
+            actualizarContadoresGlobales();
+
+            if (localStorage.getItem(WEBHOOK_KEY)) {
+                sincronizarDesdeSheets(false);
+            }
+        });
+
+        // ----------------------------------------------------
+        // GESTIÓN DE DATOS, CLOUD SYNC Y STORAGE
+        // ----------------------------------------------------
+        function cargarDatos() {
+            try {
+                const savedT = localStorage.getItem(STORAGE_KEY_TICKETS);
+                const savedI = localStorage.getItem(STORAGE_KEY_INC);
+                tickets = savedT ? JSON.parse(savedT) : getDemoTickets();
+                incumplimientos = savedI ? JSON.parse(savedI) : getDemoIncumplimientos();
+            } catch (e) {
+                tickets = getDemoTickets();
+                incumplimientos = getDemoIncumplimientos();
+            }
+        }
+
+        function guardarDatos() {
+            try {
+                localStorage.setItem(STORAGE_KEY_TICKETS, JSON.stringify(tickets));
+                localStorage.setItem(STORAGE_KEY_INC, JSON.stringify(incumplimientos));
+                actualizarContadoresGlobales();
+                return true;
+            } catch (error) {
+                mostrarToast('No fue posible guardar: almacenamiento del navegador lleno (reduzca las fotos adjuntas).', 'error');
+                return false;
+            }
+        }
+
+        async function enviarAlWebhook(module, action, dataObj) {
+            const url = localStorage.getItem(WEBHOOK_KEY);
+            if (!url) return null;
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ module, action, data: dataObj })
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('Error enviando datos a Google Apps Script:', error);
+                return null;
+            }
+        }
+
+        async function sincronizarDesdeSheets(notificar = false) {
+            const url = localStorage.getItem(WEBHOOK_KEY);
+            if (!url) {
+                if (notificar) mostrarToast('Configure primero la URL del Web App en Google Sheets & Drive', 'error');
+                return;
+            }
+            const icon = document.getElementById('sync-header-icon');
+            if (icon) icon.classList.add('fa-spin');
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.status === 'ok') {
+                    if (Array.isArray(data.tickets) && data.tickets.length > 0) {
+                        tickets = data.tickets.map(r => ({
+                            id: String(r.Ticket_ID),
+                            fecha: String(r.Fecha_Recepcion),
+                            aliado: String(r.Aliado_Comercial),
+                            nivel: String(r.Ubicacion_Sector),
+                            local: String(r.Local),
+                            solicitante: String(r.Solicitante),
+                            contacto: String(r.Contacto),
+                            area: String(r.Area_Responsable),
+                            tipo: String(r.Tipo_Solicitud),
+                            prioridad: String(r.Prioridad),
+                            estado: String(r.Estado),
+                            asignado: String(r.Responsable_Asignado || 'Atención Global'),
+                            descripcion: String(r.Descripcion),
+                            emailEnviado: String(r.Email_Enviado || 'No'),
+                            bitacora: []
+                        })).reverse();
+                    }
+                    if (Array.isArray(data.incumplimientos) && data.incumplimientos.length > 0) {
+                        incumplimientos = data.incumplimientos.map(r => ({
+                            id: String(r.ID),
+                            fecha: String(r.Fecha).slice(0, 10),
+                            dia: String(r.Dia),
+                            hora: String(r.Hora),
+                            categoria: String(r.Categoria),
+                            isHoliday: r.Feriado === 'Sí',
+                            isSeason: r.Temporada === 'Sí',
+                            codigoLocal: String(r.Local),
+                            nombreLocal: String(r.NombreLocal),
+                            tipoIncumplimiento: String(r.TipoIncumplimiento),
+                            minutosDesviacion: Number(r.MinutosDesviacion) || 0,
+                            reportadoPor: String(r.ReportadoPor),
+                            observaciones: String(r.Observaciones || ''),
+                            emailEnviado: String(r.Email_Enviado || 'No'),
+                            fotos: r.FotosDrive ? String(r.FotosDrive).split(',').map(s => s.trim()).filter(Boolean) : []
+                        })).reverse();
+                    }
+                    guardarDatos();
+                    prepararFormularioTicket();
+                    renderizarTablaUnificada();
+                    actualizarDashboard();
+                    if (notificar) mostrarToast('Sincronizado con Google Sheets correctamente', 'success');
+                }
+            } catch (e) {
+                console.error(e);
+                if (notificar) mostrarToast('No se pudo conectar con Google Sheets. Verifique la URL.', 'error');
+            } finally {
+                if (icon) icon.classList.remove('fa-spin');
+            }
+        }
+
+        function getDemoTickets() {
+            return [
+                { id: 'REQ-2026-NOV-001', fecha: '2026-11-14T09:15', aliado: 'Verona Colors', nivel: 'Edificio Oeste', local: 'EO-18', solicitante: 'Mariana Velásquez', contacto: '0414-7894512', area: 'Climatización', tipo: 'Incidencia Operativa', prioridad: 'Alta', estado: 'En Proceso', asignado: 'Coord. Mantenimiento', descripcion: 'Eficiencia baja en aire acondicionado central.', emailEnviado: 'No', bitacora: [{ fecha: '14/11/2026 09:20', texto: 'Ticket recibido y escalado.' }] },
+                { id: 'REQ-2026-NOV-002', fecha: '2026-11-15T10:30', aliado: 'Cines Unidos', nivel: 'Feria de Comida', local: 'FC-01', solicitante: 'Carlos Mendoza', contacto: '0412-3349871', area: 'Seguridad y Prevención', tipo: 'Permiso de Trabajo/Ingreso', prioridad: 'Media', estado: 'Resuelto', asignado: 'Jefatura de Seguridad', descripcion: 'Autorización ingreso nocturno cuadrilla.', emailEnviado: 'Sí', bitacora: [{ fecha: '15/11/2026 14:45', texto: 'Resuelto y cerrado conforme.' }] }
+            ];
+        }
+
+        function getDemoIncumplimientos() {
+            return [
+                { id: 'inc-1', fecha: '2026-11-14', dia: 'Sábado', hora: '10:35', categoria: 'Tienda', isHoliday: false, isSeason: false, codigoLocal: 'L-112', nombreLocal: 'Moda Costazul', reportadoPor: 'Luisana F.', observaciones: 'Santamaría abajo.', tipoIncumplimiento: 'Apertura Tardía', minutosDesviacion: 35, emailEnviado: 'No', fotos: [] }
+            ];
+        }
+
+        // ----------------------------------------------------
+        // GENERACIÓN DE TICKET ID: REQ-YYYY-MMM-001 DINÁMICO
+        // ----------------------------------------------------
+        function generarCodigoTicket(fechaISO) {
+            const base = fechaISO ? new Date(fechaISO) : new Date();
+            const fecha = isNaN(base.getTime()) ? new Date() : base;
+            const anio = fecha.getFullYear();
+            const mesIdx = fecha.getMonth();
+            const mesAbrev = MESES_ABREV[mesIdx];
+            const prefijo = `REQ-${anio}-${mesAbrev}`;
+            
+            let maxNum = 0;
+            tickets.forEach(t => {
+                if (t.id && t.id.startsWith(prefijo)) {
+                    const partes = t.id.split('-');
+                    if (partes.length === 4) {
+                        const n = parseInt(partes[3], 10);
+                        if (!isNaN(n) && n > maxNum) maxNum = n;
+                    }
+                }
+            });
+            return `${prefijo}-${String(maxNum + 1).padStart(3, '0')}`;
+        }
+
+        function prepararFormularioTicket() {
+            const ahora = new Date();
+            ahora.setMinutes(ahora.getMinutes() - ahora.getTimezoneOffset());
+            const fechaISO = ahora.toISOString().slice(0, 16);
+            document.getElementById('req-fecha').value = fechaISO;
+            const codigo = generarCodigoTicket(fechaISO);
+            document.getElementById('req-id').value = codigo;
+            document.getElementById('form-ticket-preview').textContent = codigo;
+        }
+
+        function actualizarPreviewTicket() {
+            const fechaISO = document.getElementById('req-fecha').value;
+            const codigo = generarCodigoTicket(fechaISO);
+            document.getElementById('req-id').value = codigo;
+            document.getElementById('form-ticket-preview').textContent = codigo;
+        }
+
+        // ----------------------------------------------------
+        // REGLAS DE HORARIOS Y INCUMPLIMIENTOS
+        // ----------------------------------------------------
+        function prepararFormularioIncumplimiento() {
+            const hoy = new Date().toISOString().slice(0, 10);
+            document.getElementById('inc-fecha').value = hoy;
+            document.getElementById('inc-hora').value = '10:30';
+            actualizarEvaluacionHorario();
+        }
+
+        function evaluarReglaHorario({ fechaStr, horaStr, categoria, isHoliday, isSeason }) {
+            const dt = new Date(fechaStr + 'T00:00:00');
+            const diaIdx = dt.getDay();
+            const diaNombre = DIAS_SEMANA[diaIdx] || 'Lunes';
+            const esDomingo = diaIdx === 0 || isHoliday;
+
+            let openH = 10, closeH = 20;
+            if (categoria === 'Feria de Comida') {
+                openH = esDomingo ? 12 : 11;
+                closeH = 21;
+            } else {
+                openH = esDomingo ? 12 : 10;
+                closeH = 20;
+            }
+            if (isSeason || isTemporadaGlobal) closeH += 1;
+
+            const [h, m] = (horaStr || '10:00').split(':').map(Number);
+            const reportMins = h * 60 + m;
+            const openMins = openH * 60;
+            const closeMins = closeH * 60;
+            const midpoint = openMins + (closeMins - openMins) / 2;
+
+            let tipo = 'Cerrado en Horario Operativo';
+            let desviacion = 0;
+            let diagnostico = '';
+
+            if (reportMins < openMins) {
+                tipo = 'Sin Incumplimiento (Horario Cumplido)';
+                desviacion = 0;
+                diagnostico = `Inspección previa a la apertura oficial (${openH}:00). El local aún no entra en horario operativo.`;
+            } else if (reportMins >= closeMins) {
+                tipo = 'Sin Incumplimiento (Horario Cumplido)';
+                desviacion = 0;
+                diagnostico = `Inspección posterior al cierre oficial (${closeH}:00). El local cumplió su jornada.`;
+            } else if (reportMins <= midpoint) {
+                tipo = 'Apertura Tardía';
+                desviacion = Math.max(0, reportMins - openMins);
+                diagnostico = desviacion === 0 ? `Reporte en hora de apertura (${openH}:00).` : `Retraso de ${desviacion} min respecto a la apertura (${openH}:00).`;
+            } else {
+                tipo = 'Cierre Anticipado';
+                desviacion = Math.max(0, closeMins - reportMins);
+                diagnostico = `Cierre anticipado por ${desviacion} min respecto al cierre (${closeH}:00).`;
+            }
+
+            const format12 = (hr) => {
+                const p = hr >= 12 ? 'PM' : 'AM';
+                const h12 = hr % 12 === 0 ? 12 : hr % 12;
+                return `${h12}:00 ${p}`;
+            };
+
+            return {
+                diaNombre,
+                oficialStr: `${format12(openH)} – ${format12(closeH)}`,
+                tipoAuto: tipo,
+                desviacion,
+                diagnostico
+            };
+        }
+
+        function actualizarEvaluacionHorario() {
+            const fecha = document.getElementById('inc-fecha').value;
+            const hora = document.getElementById('inc-hora').value;
+            const categoria = document.getElementById('inc-categoria').value;
+            const isHoliday = document.getElementById('inc-feriado').checked;
+            const isSeason = document.getElementById('inc-temporada').checked;
+
+            if (!fecha || !hora) return;
+            const res = evaluarReglaHorario({ fechaStr: fecha, horaStr: hora, categoria, isHoliday, isSeason });
+            document.getElementById('inc-dia').value = res.diaNombre;
+            document.getElementById('inc-tipo').value = res.tipoAuto;
+            document.getElementById('inc-eval-oficial').textContent = `Horario oficial esperado: ${res.oficialStr}`;
+            document.getElementById('inc-eval-diagnostico').textContent = res.diagnostico;
+        }
+
+        // ----------------------------------------------------
+        // GUARDAR NUEVOS REGISTROS (LOCAL + SHEETS/DRIVE)
+        // ----------------------------------------------------
+        async function guardarNuevoRequerimiento(e) {
+            e.preventDefault();
+            const fechaInput = document.getElementById('req-fecha').value;
+            const codigo = generarCodigoTicket(fechaInput);
+            document.getElementById('req-id').value = codigo;
+
+            const nuevo = {
+                id: codigo,
+                fecha: fechaInput,
+                aliado: document.getElementById('req-aliado').value.trim(),
+                nivel: document.getElementById('req-nivel').value,
+                local: document.getElementById('req-local').value.trim(),
+                solicitante: document.getElementById('req-solicitante').value.trim(),
+                contacto: document.getElementById('req-contacto').value.trim(),
+                area: document.getElementById('req-area').value,
+                tipo: document.getElementById('req-tipo').value,
+                prioridad: document.getElementById('req-prioridad').value,
+                estado: 'Pendiente',
+                asignado: 'Atención Global (En revisión)',
+                descripcion: document.getElementById('req-descripcion').value.trim(),
+                emailEnviado: 'No',
+                bitacora: [{ fecha: new Date().toLocaleString('es-VE'), texto: 'Requerimiento registrado en sistema.' }]
+            };
+
+            tickets.unshift(nuevo);
+            if (!guardarDatos()) {
+                tickets.shift();
+                return;
+            }
+            mostrarToast(`Ticket ${codigo} registrado`, 'success');
+
+            if (localStorage.getItem(WEBHOOK_KEY)) {
+                mostrarToast('Sincronizando ticket con Google Sheets...', 'info');
+                await enviarAlWebhook('requerimientos', 'create', nuevo);
+            }
+
+            document.getElementById('form-requerimiento').reset();
+            prepararFormularioTicket();
+            switchTab('consulta');
+            cambiarTabConsulta('tickets');
+        }
+
+        async function guardarNuevoIncumplimiento(e) {
+            e.preventDefault();
+            const fecha = document.getElementById('inc-fecha').value;
+            const hora = document.getElementById('inc-hora').value;
+            const categoria = document.getElementById('inc-categoria').value;
+            const isHoliday = document.getElementById('inc-feriado').checked;
+            const isSeason = document.getElementById('inc-temporada').checked;
+            const evalRes = evaluarReglaHorario({ fechaStr: fecha, horaStr: hora, categoria, isHoliday, isSeason });
+
+            const nuevo = {
+                id: 'inc-' + Date.now(),
+                fecha,
+                dia: evalRes.diaNombre,
+                hora,
+                categoria,
+                isHoliday,
+                isSeason,
+                codigoLocal: document.getElementById('inc-local-num').value.trim().toUpperCase(),
+                nombreLocal: document.getElementById('inc-local-nombre').value.trim(),
+                reportadoPor: document.getElementById('inc-reporta').value.trim(),
+                observaciones: document.getElementById('inc-observaciones').value.trim(),
+                tipoIncumplimiento: document.getElementById('inc-tipo').value,
+                minutosDesviacion: evalRes.desviacion,
+                horarioOficial: evalRes.oficialStr,
+                emailEnviado: 'No',
+                fotos: [...fotosIncTemp]
+            };
+
+            incumplimientos.unshift(nuevo);
+            if (!guardarDatos()) {
+                incumplimientos.shift();
+                return;
+            }
+            mostrarToast('Acta de incumplimiento registrada', 'success');
+
+            if (localStorage.getItem(WEBHOOK_KEY)) {
+                mostrarToast('Guardando acta y subiendo fotos a Google Drive...', 'info');
+                const res = await enviarAlWebhook('incumplimientos', 'create', nuevo);
+                if (res && Array.isArray(res.fotosDrive) && res.fotosDrive.length > 0) {
+                    nuevo.fotos = res.fotosDrive;
+                    guardarDatos();
+                    renderizarTablaUnificada();
+                }
+            }
+
+            document.getElementById('form-incumplimiento').reset();
+            fotosIncTemp = [];
+            document.getElementById('inc-fotos-preview').innerHTML = '';
+            prepararFormularioIncumplimiento();
+            switchTab('consulta');
+            cambiarTabConsulta('incumplimientos');
+        }
+
+        // ----------------------------------------------------
+        // SISTEMA DE NOTIFICACIÓN POR CORREO ELECTRÓNICO
+        // ----------------------------------------------------
+        function abrirModalCorreo(module, id) {
+            emailContext = { module, id };
+            const destInput = document.getElementById('email-destinatarios');
+            const asuntoInput = document.getElementById('email-asunto');
+            const cuerpoInput = document.getElementById('email-cuerpo');
+
+            if (module === 'ticket') {
+                const t = tickets.find(x => x.id === id);
+                if (!t) return;
+                document.getElementById('email-modal-title').textContent = `Notificar Requerimiento ${t.id}`;
+                destInput.value = '';
+                asuntoInput.value = `[PARQUE COSTAZUL] Notificación Requerimiento ${t.id} - ${t.area}`;
+                cuerpoInput.value = `Estimado equipo,\n\nSe ha registrado el siguiente requerimiento en el Centro Comercial Parque Costazul:\n\n• Ticket: ${t.id}\n• Fecha/Hora: ${t.fecha.replace('T', ' ')}\n• Aliado Comercial: ${t.aliado} (Local ${t.local} - ${t.nivel})\n• Solicitante: ${t.solicitante} (${t.contacto})\n• Área Responsable: ${t.area}\n• Tipo: ${t.tipo} | Prioridad: ${t.prioridad}\n• Descripción: ${t.descripcion}\n\nPor favor proceder con la atención y seguimiento.\n\nAtentamente,\nGerencia de Atención Global\nCC Parque Costazul`;
+            } else {
+                const inc = incumplimientos.find(x => x.id === id);
+                if (!inc) return;
+                document.getElementById('email-modal-title').textContent = `Notificar Incumplimiento — Local ${inc.codigoLocal}`;
+                destInput.value = '';
+                asuntoInput.value = `[PARQUE COSTAZUL] Notificación de Incumplimiento de Horario - Local ${inc.codigoLocal} (${inc.nombreLocal})`;
+                cuerpoInput.value = `Estimado Aliado Comercial (${inc.nombreLocal} - Local ${inc.codigoLocal}),\n\nLe informamos que el día ${inc.fecha} (${inc.dia}) se dejó constancia de un incumplimiento en los horarios operativos establecidos por el Centro Comercial Parque Costazul:\n\n• Incidencia: ${inc.tipoIncumplimiento}\n• Hora de inspección: ${inc.hora} (Desviación estimada: ${inc.minutosDesviacion} min)\n• Observación: ${inc.observaciones || 'Local cerrado durante jornada operativa.'}\n\nAgradecemos tomar las previsiones necesarias para dar estricto cumplimiento al horario comercial vigente.\n\nAtentamente,\nGerencia de Atención Global\nCC Parque Costazul`;
+            }
+
+            const modal = document.getElementById('email-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function cerrarModalCorreo() {
+            const modal = document.getElementById('email-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function procesarEnvioCorreo(e) {
+            e.preventDefault();
+            const destinatarios = document.getElementById('email-destinatarios').value.trim();
+            const asunto = document.getElementById('email-asunto').value.trim();
+            const cuerpoMensaje = document.getElementById('email-cuerpo').value.trim();
+            const { module, id } = emailContext;
+
+            if (!destinatarios) return;
+            const correos = destinatarios.split(',').map(s => s.trim()).filter(Boolean);
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const invalidos = correos.filter(c => !emailRegex.test(c));
+            if (correos.length === 0 || invalidos.length > 0) {
+                mostrarToast('Dirección(es) de correo inválida(s): ' + (invalidos.join(', ') || '(vacío)'), 'error');
+                return;
+            }
+
+            if (module === 'ticket') {
+                const t = tickets.find(x => x.id === id);
+                if (t) {
+                    t.emailEnviado = `Sí (${destinatarios})`;
+                    if (!t.bitacora) t.bitacora = [];
+                    t.bitacora.push({ fecha: new Date().toLocaleString('es-VE'), texto: `Notificación enviada por correo a: ${destinatarios}` });
+                    guardarDatos();
+                    if (ticketSeleccionadoId === id) {
+                        document.getElementById('modal-email-badge').textContent = t.emailEnviado;
+                    }
+                    mostrarToast('Enviando correo institucional...', 'info');
+                    await enviarAlWebhook('requerimientos', 'send_email', { id: t.id, destinatarios, asunto, cuerpoMensaje });
+                }
+            } else {
+                const inc = incumplimientos.find(x => x.id === id);
+                if (inc) {
+                    inc.emailEnviado = `Sí (${destinatarios})`;
+                    guardarDatos();
+                    mostrarToast('Enviando notificación al aliado...', 'info');
+                    await enviarAlWebhook('incumplimientos', 'send_email', { id: inc.id, local: inc.codigoLocal, destinatarios, asunto, cuerpoMensaje });
+                }
+            }
+
+            renderizarTablaUnificada();
+            cerrarModalCorreo();
+            mostrarToast(`Constancia guardada: Correo enviado a ${destinatarios}`, 'success');
+        }
+
+        // ----------------------------------------------------
+        // NAVEGACIÓN Y VISTAS
+        // ----------------------------------------------------
         function switchTab(tabId) {
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
             document.getElementById(`view-${tabId}`).classList.remove('hidden');
@@ -315,237 +1394,645 @@
                 btn.classList.remove('bg-costazul-teal', 'text-white', 'shadow-md');
                 btn.classList.add('text-slate-300', 'hover:bg-white/10');
             });
-            const activeBtn = document.getElementById(`nav-${tabId}`);
-            activeBtn.classList.remove('text-slate-300', 'hover:bg-white/10');
-            activeBtn.classList.add('bg-costazul-teal', 'text-white', 'shadow-md');
-            const titulos = { requerimientos: 'Requerimientos', incumplimientos: 'Incumplimientos', aliados: 'Aliados Comerciales', dashboard: 'Dashboard Gerencial', configuracion: 'Configuración' };
-            document.getElementById('breadcrumb').textContent = titulos[tabId];
-            document.getElementById('page-title').textContent = titulos[tabId];
-            if (window.innerWidth < 1024) {
-                document.getElementById('sidebar-nav').classList.add('hidden');
-                document.getElementById('sidebar-nav').classList.remove('flex');
+            const active = document.getElementById(`nav-${tabId}`);
+            if (active) {
+                active.classList.remove('text-slate-300', 'hover:bg-white/10');
+                active.classList.add('bg-costazul-teal', 'text-white', 'shadow-md');
+            }
+
+            const titulos = {
+                nuevo: ['Nuevo Registro', 'Centro Operativo Unificado'],
+                consulta: ['Consulta Unificada', 'Seguimiento de Tickets e Incumplimientos'],
+                dashboard: ['Dashboard KPIs', 'Tablero Ejecutivo Unificado'],
+                sheets: ['Google Sheets & Drive', 'Integración y Respaldo Cloud']
+            };
+            document.getElementById('breadcrumb-current').textContent = titulos[tabId][0];
+            document.getElementById('page-title').textContent = titulos[tabId][1];
+
+            if (tabId === 'consulta') renderizarTablaUnificada();
+            if (tabId === 'dashboard') setTimeout(() => actualizarDashboard(), 50);
+
+            if (window.matchMedia('(max-width: 1023px)').matches) {
+                const nav = document.getElementById('sidebar-nav');
+                if (nav) {
+                    nav.classList.add('hidden');
+                    nav.classList.remove('flex');
+                }
             }
         }
 
         function toggleMobileNav() {
             const nav = document.getElementById('sidebar-nav');
+            if (!nav) return;
             nav.classList.toggle('hidden');
             nav.classList.toggle('flex');
         }
 
-        // ==========================================
-        // LÓGICA DE REQUERIMIENTOS
-        // ==========================================
-        let tickets = [];
+        function cambiarSubformulario(sub) {
+            subformularioActual = sub;
+            const btnT = document.getElementById('subform-btn-ticket');
+            const btnI = document.getElementById('subform-btn-incumplimiento');
+            const boxT = document.getElementById('subform-container-ticket');
+            const boxI = document.getElementById('subform-container-incumplimiento');
 
-        function abrirModalTicket() {
-            document.getElementById('ticket-form').reset();
-            document.getElementById('req-id').value = '';
-            const num = tickets.length + 1;
-            document.getElementById('modal-ticket-id').textContent = `REQ-2026-${String(num).padStart(2, '0')}`;
-            document.getElementById('modal-title').textContent = 'Nuevo Requerimiento';
-            document.getElementById('ticket-modal').classList.remove('hidden');
-            document.getElementById('ticket-modal').classList.add('flex');
+            if (sub === 'ticket') {
+                btnT.className = 'flex-1 sm:flex-initial px-5 py-2 rounded-lg text-xs font-bold transition bg-costazul-navy text-white shadow-sm';
+                btnI.className = 'flex-1 sm:flex-initial px-5 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900';
+                boxT.classList.remove('hidden');
+                boxI.classList.add('hidden');
+            } else {
+                btnI.className = 'flex-1 sm:flex-initial px-5 py-2 rounded-lg text-xs font-bold transition bg-costazul-navy text-white shadow-sm';
+                btnT.className = 'flex-1 sm:flex-initial px-5 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900';
+                boxI.classList.remove('hidden');
+                boxT.classList.add('hidden');
+            }
         }
 
-        function editarTicket(id) {
+        function cambiarTabConsulta(tab) {
+            currentTabConsulta = tab;
+            const btnT = document.getElementById('tab-consulta-tickets');
+            const btnI = document.getElementById('tab-consulta-incumplimientos');
+            if (tab === 'tickets') {
+                btnT.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition bg-costazul-navy text-white shadow-sm flex items-center justify-center gap-2';
+                btnI.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2';
+            } else {
+                btnI.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition bg-costazul-navy text-white shadow-sm flex items-center justify-center gap-2';
+                btnT.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2';
+            }
+            renderizarTablaUnificada();
+        }
+
+        // ----------------------------------------------------
+        // TABLA UNIFICADA CON CONSTANCIA DE EMAIL ENVIADO
+        // ----------------------------------------------------
+        function renderizarTablaUnificada() {
+            const theadRow = document.getElementById('table-head-row');
+            const tbody = document.getElementById('table-body');
+            const emptyState = document.getElementById('empty-state-table');
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const ubicacionFiltro = document.getElementById('filter-categoria-ubicacion').value;
+            const secundarioFiltro = document.getElementById('filter-secundario').value;
+
+            if (currentTabConsulta === 'tickets') {
+                theadRow.innerHTML = `
+                    <th class="py-3.5 px-4">Ticket</th>
+                    <th class="py-3.5 px-4">Aliado / Local</th>
+                    <th class="py-3.5 px-4">Área / Tipo</th>
+                    <th class="py-3.5 px-4">Estado</th>
+                    <th class="py-3.5 px-4 text-center">Notif. Email</th>
+                    <th class="py-3.5 px-4 text-right">Acciones</th>
+                `;
+
+                const filtrados = tickets.filter(t => {
+                    const matchUbicacion = ubicacionFiltro === 'TODOS' || t.nivel === ubicacionFiltro;
+                    const matchSec = secundarioFiltro === 'TODOS' || t.estado === secundarioFiltro;
+                    const matchQ = !query || t.id.toLowerCase().includes(query) || t.aliado.toLowerCase().includes(query) || t.local.toLowerCase().includes(query);
+                    return matchUbicacion && matchSec && matchQ;
+                });
+
+                if (filtrados.length === 0) {
+                    tbody.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+                emptyState.classList.add('hidden');
+
+                tbody.innerHTML = filtrados.map(t => {
+                    const emailEnviado = t.emailEnviado && t.emailEnviado.startsWith('Sí');
+                    const emailBadge = emailEnviado
+                        ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200" title="${escapeHTML(t.emailEnviado)}"><i class="fa-solid fa-check-double"></i> Enviado</span>`
+                        : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-500">Pendiente</span>`;
+                    const idSeguro = escapeHTML(t.id);
+
+                    return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-3.5 px-4 font-mono font-bold text-costazul-navy cursor-pointer" onclick="abrirTicketModal('${idSeguro}')">${idSeguro}</td>
+                        <td class="py-3.5 px-4 font-semibold text-slate-800 cursor-pointer" onclick="abrirTicketModal('${idSeguro}')">${escapeHTML(t.aliado)} <span class="text-xs text-slate-500 font-normal">(${escapeHTML(t.nivel)} • ${escapeHTML(t.local)})</span></td>
+                        <td class="py-3.5 px-4 text-xs"><span class="font-bold text-costazul-navy">${escapeHTML(t.area)}</span><br>${escapeHTML(t.tipo)}</td>
+                        <td class="py-3.5 px-4"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${t.estado==='Pendiente'?'bg-amber-50 text-amber-700':t.estado==='En Proceso'?'bg-sky-50 text-sky-700':'bg-emerald-50 text-emerald-700'}">${t.estado}</span></td>
+                        <td class="py-3.5 px-4 text-center">${emailBadge}</td>
+                        <td class="py-3.5 px-4 text-right whitespace-nowrap space-x-1">
+                            <button onclick="abrirModalCorreo('ticket', '${t.id}')" title="Enviar correo a departamentos" class="px-2.5 py-1.5 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 rounded-lg text-xs font-semibold transition"><i class="fa-solid fa-envelope"></i></button>
+                            <button onclick="abrirTicketModal('${t.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-costazul-navy hover:text-white rounded-lg text-xs font-semibold transition">Gestionar</button>
+                            <button onclick="eliminarTicket('${t.id}')" title="Eliminar ticket" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 rounded-lg text-xs font-semibold hover:bg-rose-100"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>
+                    </tr>`;
+                }).join('');
+
+            } else {
+                theadRow.innerHTML = `
+                    <th class="py-3.5 px-4">Fecha / Día</th>
+                    <th class="py-3.5 px-4">Local</th>
+                    <th class="py-3.5 px-4">Incumplimiento</th>
+                    <th class="py-3.5 px-4 text-center">Evidencia</th>
+                    <th class="py-3.5 px-4 text-center">Notif. Aliado</th>
+                    <th class="py-3.5 px-4 text-right">Acciones</th>
+                `;
+
+                const filtrados = incumplimientos.filter(i => {
+                    const matchUbicacion = ubicacionFiltro === 'TODOS' || i.categoria === ubicacionFiltro;
+                    const matchSec = secundarioFiltro === 'TODOS' || i.tipoIncumplimiento === secundarioFiltro;
+                    const matchQ = !query || i.codigoLocal.toLowerCase().includes(query) || i.nombreLocal.toLowerCase().includes(query);
+                    return matchUbicacion && matchSec && matchQ;
+                });
+
+                if (filtrados.length === 0) {
+                    tbody.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+                emptyState.classList.add('hidden');
+
+                tbody.innerHTML = filtrados.map(i => {
+                    const emailEnviado = i.emailEnviado && i.emailEnviado.startsWith('Sí');
+                    const emailBadge = emailEnviado
+                        ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200" title="${escapeHTML(i.emailEnviado)}"><i class="fa-solid fa-check-double"></i> Notificado</span>`
+                        : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-500">Sin notificar</span>`;
+
+                    return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-3.5 px-4 text-xs font-medium">${escapeHTML(i.fecha)} <br><span class="text-slate-500">${escapeHTML(i.dia)} (${escapeHTML(i.hora)})</span></td>
+                        <td class="py-3.5 px-4 font-bold text-slate-800">${escapeHTML(i.codigoLocal)} • ${escapeHTML(i.nombreLocal)}<br><span class="text-[11px] font-normal text-slate-500">Insp: ${escapeHTML(i.reportadoPor)}</span></td>
+                        <td class="py-3.5 px-4"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">${escapeHTML(i.tipoIncumplimiento)} (${i.minutosDesviacion}m)</span></td>
+                        <td class="py-3.5 px-4 text-center">${i.fotos && i.fotos.length > 0 ? `<button onclick="abrirLightbox('${i.fotos[0]}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold"><i class="fa-solid fa-image text-costazul-teal mr-1"></i>Ver (${i.fotos.length})</button>` : '<span class="text-xs text-slate-400">Sin foto</span>'}</td>
+                        <td class="py-3.5 px-4 text-center">${emailBadge}</td>
+                        <td class="py-3.5 px-4 text-right whitespace-nowrap space-x-1">
+                            <button onclick="abrirModalCorreo('incumplimiento', '${i.id}')" title="Notificar al aliado por correo" class="px-2.5 py-1.5 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 rounded-lg text-xs font-semibold transition"><i class="fa-solid fa-envelope"></i></button>
+                            <button onclick="eliminarIncumplimiento('${i.id}')" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 rounded-lg text-xs font-semibold hover:bg-rose-100"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>
+                    </tr>`;
+                }).join('');
+            }
+        }
+
+        function limpiarFiltrosConsulta() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('filter-categoria-ubicacion').value = 'TODOS';
+            document.getElementById('filter-secundario').value = 'TODOS';
+            renderizarTablaUnificada();
+        }
+
+        // ----------------------------------------------------
+        // DASHBOARD DE KPIS
+        // ----------------------------------------------------
+        function actualizarDashboard() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const tickColor = isDark ? '#cbd5e1' : '#475569';
+            const gridColor = isDark ? 'rgba(148,163,184,0.15)' : 'rgba(148,163,184,0.25)';
+            const totalT = tickets.length;
+            const pendT = tickets.filter(t => t.estado === 'Pendiente').length;
+            const totalInc = incumplimientos.length;
+            const resT = tickets.filter(t => t.estado === 'Resuelto').length;
+            const sla = totalT > 0 ? Math.round((resT / totalT) * 100) : 0;
+
+            document.getElementById('kpi-total-tickets').textContent = totalT;
+            document.getElementById('kpi-tickets-pend').textContent = pendT;
+            document.getElementById('kpi-total-inc').textContent = totalInc;
+            document.getElementById('kpi-sla').textContent = `${sla}%`;
+
+            const areas = ['Electricidad', 'Climatización', 'Seguridad y Prevención', 'Administración y Finanzas', 'Comercialización', 'Servicios Generales', 'Atención Global'];
+            const datosAreas = areas.map(a => tickets.filter(t => t.area === a).length);
+            renderChart('chart-areas', 'bar', {
+                labels: areas,
+                datasets: [{ label: 'Tickets', data: datosAreas, backgroundColor: isDark ? '#00A896' : '#0A2540', borderRadius: 6 }]
+            }, {
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: tickColor, precision: 0 }, grid: { color: gridColor } },
+                    x: { ticks: { color: tickColor, autoSkip: false, font: { size: 9 } }, grid: { display: false } }
+                }
+            });
+
+            const tiposInc = ['Apertura Tardía', 'Cierre Anticipado', 'Cerrado en Horario Operativo', 'Sin Incumplimiento (Horario Cumplido)'];
+            const datosInc = tiposInc.map(ti => incumplimientos.filter(i => i.tipoIncumplimiento === ti).length);
+            renderChart('chart-inc-tipos', 'doughnut', {
+                labels: tiposInc,
+                datasets: [{ data: datosInc, backgroundColor: ['#F59E0B', '#6366F1', '#EF4444', '#10B981'] }]
+            }, {
+                plugins: { legend: { position: 'bottom', labels: { color: tickColor, boxWidth: 12, font: { size: 10 } } } }
+            });
+        }
+
+        function renderChart(canvasId, type, data, options = {}) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            if (charts[canvasId]) charts[canvasId].destroy();
+            charts[canvasId] = new Chart(ctx, { type, data, options: { responsive: true, maintainAspectRatio: false, ...options } });
+        }
+
+        // ----------------------------------------------------
+        // UTILIDADES, DROPZONE, MODALES Y IMPRESIÓN
+        // ----------------------------------------------------
+        function inicializarDropzone() {
+            const dz = document.getElementById('inc-dropzone');
+            const input = document.getElementById('inc-fotos-input');
+            if (!dz || !input) return;
+
+            dz.addEventListener('click', () => input.click());
+            dz.addEventListener('dragover', e => {
+                e.preventDefault();
+                dz.classList.add('border-costazul-teal', 'bg-costazul-tealLight/30');
+            });
+            dz.addEventListener('dragleave', () => {
+                dz.classList.remove('border-costazul-teal', 'bg-costazul-tealLight/30');
+            });
+            dz.addEventListener('drop', e => {
+                e.preventDefault();
+                dz.classList.remove('border-costazul-teal', 'bg-costazul-tealLight/30');
+                if (e.dataTransfer.files) procesarArchivosFoto(e.dataTransfer.files);
+            });
+        }
+
+        function actualizarContadoresGlobales() {
+            const pend = tickets.filter(t => t.estado === 'Pendiente').length;
+            document.getElementById('badge-total-pendientes').textContent = pend;
+            document.getElementById('count-tab-tickets').textContent = tickets.length;
+            document.getElementById('count-tab-incumplimientos').textContent = incumplimientos.length;
+        }
+
+        function activarCierrePorFondo(ids) {
+            ids.forEach(id => {
+                const modal = document.getElementById(id);
+                if (!modal) return;
+                modal.addEventListener('mousedown', e => {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                        if (id === 'ticket-modal') ticketSeleccionadoId = null;
+                    }
+                });
+            });
+        }
+
+        function mostrarFechaActual() {
+            const hoy = new Date().toLocaleDateString('es-VE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('current-date-display').textContent = hoy.charAt(0).toUpperCase() + hoy.slice(1);
+        }
+
+        function toggleTemporadaGlobal(e) {
+            isTemporadaGlobal = e.target.checked;
+            actualizarEvaluacionHorario();
+            mostrarToast(isTemporadaGlobal ? 'Modo Temporada Global Activado (+1h al cierre)' : 'Modo Temporada Desactivado', 'info');
+        }
+
+        function abrirTicketModal(id) {
+            ticketSeleccionadoId = id;
             const t = tickets.find(x => x.id === id);
             if (!t) return;
-            document.getElementById('req-id').value = t.id;
-            document.getElementById('req-aliado').value = t.aliado;
-            document.getElementById('req-nivel').value = t.nivel;
-            document.getElementById('req-local').value = t.local;
-            document.getElementById('req-solicitante').value = t.solicitante;
-            document.getElementById('req-area').value = t.area;
-            document.getElementById('req-tipo').value = t.tipo;
-            document.getElementById('req-prioridad').value = t.prioridad;
-            document.getElementById('req-descripcion').value = t.descripcion;
             document.getElementById('modal-ticket-id').textContent = t.id;
-            document.getElementById('modal-title').textContent = 'Editar Requerimiento';
-            document.getElementById('ticket-modal').classList.remove('hidden');
-            document.getElementById('ticket-modal').classList.add('flex');
+            document.getElementById('modal-aliado').textContent = t.aliado;
+            document.getElementById('modal-ubicacion').textContent = `${t.nivel} • Local ${t.local}`;
+            document.getElementById('modal-det-area').textContent = `${t.area} (${t.tipo})`;
+            document.getElementById('modal-det-solicitante').textContent = `${t.solicitante} — ${t.contacto}`;
+            document.getElementById('modal-det-descripcion').textContent = t.descripcion;
+            document.getElementById('modal-edit-estado').value = t.estado;
+            document.getElementById('modal-edit-asignado').value = t.asignado || '';
+            document.getElementById('modal-email-badge').textContent = t.emailEnviado || 'No enviado';
+            document.getElementById('modal-nueva-nota').value = '';
+            
+            const bitList = document.getElementById('modal-bitacora-list');
+            bitList.innerHTML = (t.bitacora || []).map(b => `<div class="bg-slate-50 p-2 rounded border text-xs"><b>${escapeHTML(b.fecha)}</b>: ${escapeHTML(b.texto)}</div>`).join('');
+            const modal = document.getElementById('ticket-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
-        function eliminarTicket(id) {
-            if (confirm(`¿Eliminar el ticket ${id}?`)) {
-                tickets = tickets.filter(t => t.id !== id);
-                localStorage.setItem('costazul_tickets_fase3', JSON.stringify(tickets));
-                renderizarTablaTickets();
+        function cerrarTicketModal() {
+            const modal = document.getElementById('ticket-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            ticketSeleccionadoId = null;
+        }
+
+        async function guardarCambiosTicketModal() {
+            const t = tickets.find(x => x.id === ticketSeleccionadoId);
+            if (!t) return;
+            const nuevoEstado = document.getElementById('modal-edit-estado').value;
+            const nota = document.getElementById('modal-nueva-nota').value.trim();
+            const nuevoAsignado = document.getElementById('modal-edit-asignado').value.trim();
+            t.estado = nuevoEstado;
+            if (nuevoAsignado && nuevoAsignado !== t.asignado) {
+                if (!t.bitacora) t.bitacora = [];
+                t.bitacora.push({ fecha: new Date().toLocaleString('es-VE'), texto: `Responsable asignado: ${nuevoAsignado}` });
+                t.asignado = nuevoAsignado;
             }
-        }
-
-        function cerrarModalTicket() {
-            document.getElementById('ticket-modal').classList.add('hidden');
-            document.getElementById('ticket-modal').classList.remove('flex');
-        }
-
-        function guardarTicket(e) {
-            e.preventDefault();
-            const idEx = document.getElementById('req-id').value;
-            const data = {
-                id: idEx || `REQ-2026-${String(tickets.length + 1).padStart(2, '0')}`,
-                fecha: idEx ? tickets.find(t => t.id === idEx).fecha : new Date().toISOString(),
-                aliado: document.getElementById('req-aliado').value,
-                nivel: document.getElementById('req-nivel').value,
-                local: document.getElementById('req-local').value,
-                solicitante: document.getElementById('req-solicitante').value,
-                area: document.getElementById('req-area').value,
-                tipo: document.getElementById('req-tipo').value,
-                prioridad: document.getElementById('req-prioridad').value,
-                descripcion: document.getElementById('req-descripcion').value,
-                estado: 'Pendiente'
-            };
-            if (idEx) {
-                const i = tickets.findIndex(t => t.id === idEx);
-                if (i !== -1) tickets[i] = data;
-            } else {
-                tickets.push(data);
+            if (nota) {
+                if (!t.bitacora) t.bitacora = [];
+                t.bitacora.push({ fecha: new Date().toLocaleString('es-VE'), texto: nota });
             }
-            localStorage.setItem('costazul_tickets_fase3', JSON.stringify(tickets));
-            cerrarModalTicket();
-            renderizarTablaTickets();
+            guardarDatos();
+            renderizarTablaUnificada();
+            if (localStorage.getItem(WEBHOOK_KEY)) {
+                await enviarAlWebhook('requerimientos', 'update', t);
+            }
+            cerrarTicketModal();
+            mostrarToast('Ticket actualizado correctamente', 'success');
         }
 
-        function renderizarTablaTickets() {
-            const tbody = document.getElementById('tickets-table-body');
-            const empty = document.getElementById('empty-state-tickets');
-            if (tickets.length === 0) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
-            empty.classList.add('hidden');
-            const cPrio = { 'Crítica': 'bg-rose-50 text-rose-700 border-rose-200', 'Alta': 'bg-orange-50 text-orange-700 border-orange-200', 'Media': 'bg-blue-50 text-blue-700 border-blue-200', 'Baja': 'bg-slate-100 text-slate-600 border-slate-200' };
-            const cEst = { 'Pendiente': 'bg-amber-50 text-amber-700 border-amber-200', 'En Proceso': 'bg-sky-50 text-sky-700 border-sky-200', 'Resuelto': 'bg-emerald-50 text-emerald-700 border-emerald-200' };
-            tbody.innerHTML = tickets.map(t => `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="py-3 px-4"><span class="font-mono font-bold text-xs text-costazul-navy bg-slate-100 px-2.5 py-1 rounded-lg">${t.id}</span></td>
-                    <td class="py-3 px-4"><div class="font-bold text-slate-800">${t.aliado}</div><div class="text-xs text-slate-500">${t.nivel} • ${t.local}</div></td>
-                    <td class="py-3 px-4"><div class="text-xs font-semibold text-costazul-navy">${t.area}</div><div class="text-xs text-slate-500">${t.tipo}</div></td>
-                    <td class="py-3 px-4"><span class="px-2.5 py-0.5 rounded-md text-xs font-semibold border ${cPrio[t.prioridad] || cPrio['Media']}">${t.prioridad}</span></td>
-                    <td class="py-3 px-4"><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold border ${cEst[t.estado] || cEst['Pendiente']}">${t.estado}</span></td>
-                    <td class="py-3 px-4 text-xs text-slate-500">${new Date(t.fecha).toLocaleDateString('es-VE')}</td>
-                    <td class="py-3 px-4 text-right">
-                        <div class="flex items-center justify-end gap-2">
-                            <button onclick="editarTicket('${t.id}')" class="p-1.5 rounded-lg text-costazul-blue hover:bg-blue-50 transition"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="eliminarTicket('${t.id}')" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
-                    </td>
-                </tr>
+        async function eliminarIncumplimiento(id) {
+            if (!confirm('¿Eliminar esta acta de incumplimiento? Esta acción no se puede deshacer.')) return;
+            incumplimientos = incumplimientos.filter(i => i.id !== id);
+            guardarDatos();
+            renderizarTablaUnificada();
+            if (localStorage.getItem(WEBHOOK_KEY)) {
+                await enviarAlWebhook('incumplimientos', 'delete', { id });
+            }
+            mostrarToast('Acta de incumplimiento eliminada', 'info');
+        }
+
+        async function eliminarTicket(id) {
+            if (!confirm(`¿Eliminar el ticket ${id}? Esta acción no se puede deshacer.`)) return;
+            tickets = tickets.filter(t => t.id !== id);
+            guardarDatos();
+            renderizarTablaUnificada();
+            if (localStorage.getItem(WEBHOOK_KEY)) {
+                await enviarAlWebhook('requerimientos', 'delete', { id });
+            }
+            mostrarToast('Ticket eliminado', 'info');
+        }
+
+        function procesarArchivosFoto(files) {
+            const permitidos = ['image/jpeg', 'image/png', 'image/webp'];
+            const disponibles = 4 - fotosIncTemp.length;
+            if (disponibles <= 0) {
+                mostrarToast('Puede adjuntar un máximo de 4 imágenes de evidencia.', 'error');
+                return;
+            }
+            Array.from(files).slice(0, disponibles).forEach(file => {
+                if (!permitidos.includes(file.type) || file.size > 5 * 1024 * 1024) {
+                    mostrarToast(`${file.name}: formato no admitido o supera 5 MB.`, 'error');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        if (w > 900) { h = Math.round((h * 900) / w); w = 900; }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        fotosIncTemp.push(canvas.toDataURL('image/jpeg', 0.72));
+                        renderPreviewsFotos();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+            document.getElementById('inc-fotos-input').value = '';
+        }
+
+        function renderPreviewsFotos() {
+            const preview = document.getElementById('inc-fotos-preview');
+            preview.innerHTML = fotosIncTemp.map((src, i) => `
+                <div class="relative rounded-lg overflow-hidden border aspect-square">
+                    <img src="${src}" class="w-full h-full object-cover">
+                    <button type="button" onclick="fotosIncTemp.splice(${i},1); renderPreviewsFotos();" class="absolute top-1 right-1 bg-rose-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">&times;</button>
+                </div>
             `).join('');
         }
 
-        // ==========================================
-        // LÓGICA DE INCUMPLIMIENTOS (FASE 4.1)
-        // ==========================================
-        let incumplimientos = [];
-
-        function abrirModalIncumplimiento() {
-            document.getElementById('incumplimiento-form').reset();
-            document.getElementById('inc-id').value = '';
-            const hoy = new Date().toISOString().split('T')[0];
-            document.getElementById('inc-fecha').value = hoy;
-            document.getElementById('incumplimiento-modal').classList.remove('hidden');
-            document.getElementById('incumplimiento-modal').classList.add('flex');
-        }
-
-        function editarIncumplimiento(id) {
-            const inc = incumplimientos.find(x => x.id === id);
-            if (!inc) return;
-            document.getElementById('inc-id').value = inc.id;
-            document.getElementById('inc-fecha').value = inc.fecha;
-            document.getElementById('inc-hora').value = inc.hora;
-            document.getElementById('inc-local').value = inc.local;
-            document.getElementById('inc-nombre-local').value = inc.nombreLocal;
-            document.getElementById('inc-tipo').value = inc.tipo;
-            document.getElementById('inc-reporta').value = inc.reportadoPor;
-            document.getElementById('inc-obs').value = inc.observaciones || '';
-            document.getElementById('incumplimiento-modal').classList.remove('hidden');
-            document.getElementById('incumplimiento-modal').classList.add('flex');
-        }
-
-        function eliminarIncumplimiento(id) {
-            if (confirm(`¿Eliminar este incumplimiento?`)) {
-                incumplimientos = incumplimientos.filter(x => x.id !== id);
-                localStorage.setItem('costazul_incumplimientos_fase4', JSON.stringify(incumplimientos));
-                renderizarTablaIncumplimientos();
-            }
-        }
-
-        function cerrarModalIncumplimiento() {
-            document.getElementById('incumplimiento-modal').classList.add('hidden');
-            document.getElementById('incumplimiento-modal').classList.remove('flex');
-        }
-
-        function guardarIncumplimiento(e) {
-            e.preventDefault();
-            const idEx = document.getElementById('inc-id').value;
-            const data = {
-                id: idEx || `INC-${Date.now()}`,
-                fecha: document.getElementById('inc-fecha').value,
-                hora: document.getElementById('inc-hora').value,
-                local: document.getElementById('inc-local').value.toUpperCase(),
-                nombreLocal: document.getElementById('inc-nombre-local').value,
-                tipo: document.getElementById('inc-tipo').value,
-                reportadoPor: document.getElementById('inc-reporta').value,
-                observaciones: document.getElementById('inc-obs').value
-            };
-            if (idEx) {
-                const i = incumplimientos.findIndex(x => x.id === idEx);
-                if (i !== -1) incumplimientos[i] = data;
+        function abrirLightbox(rawSrc) {
+            let displaySrc = rawSrc;
+            const driveBtn = document.getElementById('lightbox-drive-btn');
+            if (rawSrc && rawSrc.startsWith('http')) {
+                const match = rawSrc.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) displaySrc = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1200`;
+                driveBtn.href = rawSrc;
+                driveBtn.classList.remove('hidden');
+                driveBtn.classList.add('inline-flex');
             } else {
-                incumplimientos.unshift(data); // Más recientes primero
+                driveBtn.classList.add('hidden');
+                driveBtn.classList.remove('inline-flex');
             }
-            localStorage.setItem('costazul_incumplimientos_fase4', JSON.stringify(incumplimientos));
-            cerrarModalIncumplimiento();
-            renderizarTablaIncumplimientos();
-        }
-
-        function renderizarTablaIncumplimientos() {
-            const tbody = document.getElementById('incumplimientos-table-body');
-            const empty = document.getElementById('empty-state-incumplimientos');
-            if (incumplimientos.length === 0) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
-            empty.classList.add('hidden');
-            
-            const cTipo = {
-                'Apertura Tardía': 'bg-amber-50 text-amber-700 border-amber-200',
-                'Cierre Anticipado': 'bg-indigo-50 text-indigo-700 border-indigo-200',
-                'Cerrado en Horario': 'bg-rose-50 text-rose-700 border-rose-200'
+            const lbImg = document.getElementById('lightbox-img');
+            lbImg.onerror = function () {
+                this.onerror = null;
+                this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420"><rect fill="%230f172a" width="800" height="420"/><text fill="%2394a3b8" x="400" y="210" text-anchor="middle" font-family="sans-serif" font-size="20">Vista previa no disponible — use "Abrir en Drive"</text></svg>';
             };
-
-            tbody.innerHTML = incumplimientos.map(inc => `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="py-3 px-4 text-xs text-slate-600">
-                        ${new Date(inc.fecha + 'T12:00:00').toLocaleDateString('es-VE')}
-                    </td>
-                    <td class="py-3 px-4">
-                        <div class="font-bold text-slate-800">${inc.local}</div>
-                        <div class="text-xs text-slate-500">${inc.nombreLocal}</div>
-                    </td>
-                    <td class="py-3 px-4 text-xs font-semibold text-slate-700">${inc.hora}</td>
-                    <td class="py-3 px-4">
-                        <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold border ${cTipo[inc.tipo] || cTipo['Apertura Tardía']}">
-                            ${inc.tipo}
-                        </span>
-                    </td>
-                    <td class="py-3 px-4 text-xs text-slate-500">${inc.reportadoPor}</td>
-                    <td class="py-3 px-4 text-right">
-                        <div class="flex items-center justify-end gap-2">
-                            <button onclick="editarIncumplimiento('${inc.id}')" class="p-1.5 rounded-lg text-costazul-blue hover:bg-blue-50 transition"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="eliminarIncumplimiento('${inc.id}')" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            lbImg.src = displaySrc;
+            const modal = document.getElementById('lightbox-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        function cerrarLightbox() {
+            const modal = document.getElementById('lightbox-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
-        // INICIALIZACIÓN
-        document.addEventListener('DOMContentLoaded', () => {
-            mostrarFechaActual();
-            
-            const tGuardados = localStorage.getItem('costazul_tickets_fase3');
-            if (tGuardados) tickets = JSON.parse(tGuardados);
-            renderizarTablaTickets();
+        function abrirPlantillasTickets() {
+            const modal = document.getElementById('plantilla-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        function cerrarPlantillasTickets() {
+            const modal = document.getElementById('plantilla-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        function aplicarPlantillaTicket(area, tipo, prio, desc) {
+            document.getElementById('req-area').value = area;
+            document.getElementById('req-tipo').value = tipo;
+            document.getElementById('req-prioridad').value = prio;
+            document.getElementById('req-descripcion').value = desc;
+            cerrarPlantillasTickets();
+            mostrarToast('Plantilla aplicada', 'success');
+        }
 
-            const iGuardados = localStorage.getItem('costazul_incumplimientos_fase4');
-            if (iGuardados) incumplimientos = JSON.parse(iGuardados);
-            renderizarTablaIncumplimientos();
+        function abrirReporteMensual() {
+            document.getElementById('reporte-mes').value = new Date().toISOString().slice(0, 7);
+            generarContenidoReporteMensual();
+            const modal = document.getElementById('reporte-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        function cerrarReporteMensual() {
+            const modal = document.getElementById('reporte-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        function generarContenidoReporteMensual() {
+            const mesVal = document.getElementById('reporte-mes').value;
+            const incsMes = incumplimientos.filter(i => i.fecha.startsWith(mesVal));
+            const html = `
+                <div style="font-family: sans-serif;">
+                    <h2 style="font-size: 16px; font-weight: bold; color: #0A2540;">Centro Comercial Parque Costazul — Gerencia de Atención Global</h2>
+                    <h3 style="font-size: 14px; margin-top: 4px;">Reporte Mensual de Incumplimientos de Horario (${mesVal})</h3>
+                    <p style="margin-top: 8px;">Total de actas registradas en el periodo: <strong>${incsMes.length}</strong></p>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 11px;">
+                        <thead>
+                            <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1; text-align: left;">
+                                <th style="padding: 6px;">Fecha / Hora</th>
+                                <th style="padding: 6px;">Local</th>
+                                <th style="padding: 6px;">Incumplimiento</th>
+                                <th style="padding: 6px;">Inspector</th>
+                                <th style="padding: 6px;">Notificado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${incsMes.map(i => `
+                                <tr style="border-bottom: 1px solid #e2e8f0;">
+                                    <td style="padding: 6px;">${escapeHTML(i.fecha)} (${escapeHTML(i.hora)})</td>
+                                    <td style="padding: 6px;">${escapeHTML(i.codigoLocal)} - ${escapeHTML(i.nombreLocal)}</td>
+                                    <td style="padding: 6px;">${escapeHTML(i.tipoIncumplimiento)} (${i.minutosDesviacion}m)</td>
+                                    <td style="padding: 6px;">${escapeHTML(i.reportadoPor)}</td>
+                                    <td style="padding: 6px;">${escapeHTML(i.emailEnviado || 'No')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            document.getElementById('reporte-contenido-imprimible').innerHTML = html;
+            document.getElementById('print-area').innerHTML = html;
+        }
+        function imprimirReporteMensual() {
+            generarContenidoReporteMensual();
+            window.print();
+        }
+
+        function exportarCSV() {
+            const tHeaders = ['Ticket_ID', 'Fecha_Recepcion', 'Aliado_Comercial', 'Ubicacion_Sector', 'Local', 'Solicitante', 'Contacto', 'Area_Responsable', 'Tipo_Solicitud', 'Prioridad', 'Estado', 'Responsable_Asignado', 'Email_Enviado'];
+            const tRows = tickets.map(t => [t.id, t.fecha, t.aliado, t.nivel, t.local, t.solicitante, t.contacto, t.area, t.tipo, t.prioridad, t.estado, t.asignado || 'Sin asignar', t.emailEnviado || 'No']);
+            const iHeaders = ['ID', 'Fecha', 'Dia', 'Hora', 'Categoria', 'Feriado', 'Temporada', 'Local', 'NombreLocal', 'TipoIncumplimiento', 'MinutosDesviacion', 'ReportadoPor', 'Observaciones', 'Email_Enviado'];
+            const iRows = incumplimientos.map(i => [i.id, i.fecha, i.dia, i.hora, i.categoria, i.isHoliday ? 'Sí' : 'No', i.isSeason ? 'Sí' : 'No', i.codigoLocal, i.nombreLocal, i.tipoIncumplimiento, i.minutosDesviacion, i.reportadoPor, i.observaciones || '', i.emailEnviado || 'No']);
+            const toCSV = arr => arr.map(e => e.map(c => `"${String(c).replace(/"/g, '""')}"`).join(';')).join('\n');
+            const csv = '\uFEFF' + toCSV([tHeaders, ...tRows]) + '\n\n' + toCSV([iHeaders, ...iRows]);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `ParqueCostazul_Reporte_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            mostrarToast('CSV exportado con éxito', 'success');
+        }
+
+        function cargarConfigWebhook() {
+            const url = localStorage.getItem(WEBHOOK_KEY) || '';
+            document.getElementById('webhook-url-input').value = url;
+            actualizarEstadoVisualWebhook(url);
+        }
+
+        function esWebhookValido(url) {
+            if (!url) return true;
+            try {
+                const p = new URL(url);
+                return p.protocol === 'https:' && p.hostname === 'script.google.com' && p.pathname.includes('/macros/s/');
+            } catch {
+                return false;
+            }
+        }
+
+        function guardarWebhookURL() {
+            const url = document.getElementById('webhook-url-input').value.trim();
+            if (!esWebhookValido(url)) {
+                mostrarToast('URL no válida. Debe ser la URL /exec de una implementación de Google Apps Script (https).', 'error');
+                return;
+            }
+            localStorage.setItem(WEBHOOK_KEY, url);
+            actualizarEstadoVisualWebhook(url);
+            if (url) {
+                mostrarToast('Webhook guardado. Sincronizando con Google Sheets...', 'success');
+                sincronizarDesdeSheets(true);
+            } else {
+                mostrarToast('Webhook desactivado (Modo Local)', 'info');
+            }
+        }
+
+        function actualizarEstadoVisualWebhook(url) {
+            const dot = document.getElementById('webhook-status-dot');
+            const badge = document.getElementById('webhook-badge');
+            const btnSync = document.getElementById('btn-sync-header');
+            if (url && url.startsWith('https://script.google.com/')) {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
+                badge.textContent = 'Conectado';
+                badge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
+                btnSync.classList.remove('hidden');
+                btnSync.classList.add('inline-flex');
+            } else {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-500';
+                badge.textContent = 'Desconectado';
+                badge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500';
+                btnSync.classList.add('hidden');
+                btnSync.classList.remove('inline-flex');
+            }
+        }
+
+        function copiarCodigoAppsScript() {
+            const code = document.getElementById('apps-script-code').textContent;
+            navigator.clipboard.writeText(code);
+            mostrarToast('Código Apps Script copiado al portapapeles', 'success');
+        }
+
+        function toggleDarkMode() {
+            aplicarModoOscuro(!document.documentElement.classList.contains('dark'));
+        }
+
+        function aplicarModoOscuro(isDark) {
+            document.documentElement.classList.toggle('dark', isDark);
+            localStorage.setItem(DARK_KEY, isDark ? '1' : '0');
+            document.getElementById('btn-dark-mode').innerHTML = isDark ? '<i class="fa-solid fa-sun text-amber-400"></i>' : '<i class="fa-solid fa-moon"></i>';
+            if (!document.getElementById('view-dashboard').classList.contains('hidden')) actualizarDashboard();
+        }
+
+        function confirmarReinicioDatos() {
+            if (confirm('¿Restablecer datos demo integrados?')) {
+                tickets = getDemoTickets();
+                incumplimientos = getDemoIncumplimientos();
+                guardarDatos();
+                prepararFormularioTicket();
+                renderizarTablaUnificada();
+                mostrarToast('Datos demo restaurados', 'info');
+            }
+        }
+
+        function mostrarToast(mensaje, tipo = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const estilos = { success: 'bg-costazul-navy text-white border-l-4 border-costazul-teal', error: 'bg-rose-900 text-white border-l-4 border-rose-400', info: 'bg-slate-800 text-white border-l-4 border-costazul-gold' };
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl text-xs font-medium transition-all ${estilos[tipo] || estilos.success}`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-costazul-teal"></i><span>${mensaje}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        function abrirPaletaComandos() {
+            const cp = document.getElementById('command-palette');
+            cp.classList.remove('hidden');
+            cp.classList.add('flex');
+            document.getElementById('command-input').value = '';
+            filtrarComandos();
+            setTimeout(() => document.getElementById('command-input').focus(), 50);
+        }
+        function cerrarPaletaComandos() {
+            const cp = document.getElementById('command-palette');
+            cp.classList.add('hidden');
+            cp.classList.remove('flex');
+        }
+        function filtrarComandos() {
+            const q = document.getElementById('command-input').value.toLowerCase();
+            const acciones = [
+                { icon: 'plus', label: 'Nuevo Requerimiento / Ticket', fn: "switchTab('nuevo'); cambiarSubformulario('ticket'); cerrarPaletaComandos();" },
+                { icon: 'clock', label: 'Nuevo Incumplimiento de Horario', fn: "switchTab('nuevo'); cambiarSubformulario('incumplimiento'); cerrarPaletaComandos();" },
+                { icon: 'list-check', label: 'Ir a Consulta Unificada', fn: "switchTab('consulta'); cerrarPaletaComandos();" },
+                { icon: 'chart-pie', label: 'Ver Dashboard KPIs', fn: "switchTab('dashboard'); cerrarPaletaComandos();" },
+                { icon: 'cloud', label: 'Configurar Google Sheets & Drive', fn: "switchTab('sheets'); cerrarPaletaComandos();" },
+                { icon: 'file-pdf', label: 'Generar Reporte Mensual PDF', fn: "abrirReporteMensual(); cerrarPaletaComandos();" }
+            ];
+            tickets.forEach(t => {
+                acciones.push({ icon: 'ticket', label: `${t.id} — ${t.aliado} (${t.local})`, fn: `cerrarPaletaComandos(); abrirTicketModal('${t.id}');` });
+            });
+            const filtrados = acciones.filter(a => a.label.toLowerCase().includes(q));
+            document.getElementById('command-results').innerHTML = filtrados.map(a => `
+                <button onclick="${a.fn}" class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-100 flex items-center gap-2.5 text-slate-700 transition">
+                    <i class="fa-solid fa-${a.icon} w-4 text-center text-costazul-teal"></i>
+                    <span>${a.label}</span>
+                </button>
+            `).join('') || '<p class="p-3 text-center text-slate-400">Sin coincidencias</p>';
+        }
+
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); abrirPaletaComandos(); }
+            if (e.key === 'Escape') { cerrarPaletaComandos(); cerrarTicketModal(); cerrarModalCorreo(); cerrarLightbox(); cerrarReporteMensual(); cerrarPlantillasTickets(); }
         });
     </script>
 </body>
